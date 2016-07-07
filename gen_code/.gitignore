@@ -1,0 +1,2 @@
+# Ignore the npm packages which can be installed with npm install
+node_modules
