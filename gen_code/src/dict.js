@@ -33,19 +33,19 @@ Dictionary.prototype.ids = [];
 Dictionary.prototype.rnd_def = function(n) {
    //let user decide size of selection
    //with an invariant that prevents overflows
-   return this.dict[Math.random(0, n) % this.dict.length];
+   console.log( this.dict[Math.floor(Math.random() * this.dict.length) % n]);
 }
 
 //influence from project in alg
 Dictionary.prototype.shuffle = function() {
-   var swap = function(e1, e2) {
-      var temp = e1;
-      e1 = e2;
-      e2 = temp;
+   var swap = function(i1, i2, arr) {
+      var temp = arr[i1];
+      arr[i1] = arr[i2];
+      arr[i2] = temp;
    }
       
    for (var i = 0; i < this.dict.length; i++)
-      swap(this.dict[i], this.dict[Math.random(0, this.dict.length)]);
+      swap(i, Math.floor(Math.random()*this.dict.length), this.dict);
 }
 
 
