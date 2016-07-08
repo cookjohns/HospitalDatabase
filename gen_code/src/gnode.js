@@ -2,8 +2,6 @@ var G_Node = function() {
    this.edges = [];
 };
 
-console.log(G_Node);
-
 G_Node.prototype.depends_on = function (node)
 {
    node.link(this);

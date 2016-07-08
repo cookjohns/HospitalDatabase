@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-var Dictionary = function(id, regex, file_name_path, shuffle)
+var Dictionary = function(id, file_name_path, regex = /\n/, shuffle = true)
 {
    if(id in Dictionary.prototype.ids) {
       return Dictionary.prototype.ids[id];
@@ -33,7 +33,7 @@ Dictionary.prototype.ids = [];
 Dictionary.prototype.rnd_def = function(n) {
    //let user decide size of selection
    //with an invariant that prevents overflows
-   console.log( this.dict[Math.floor(Math.random() * this.dict.length) % n]);
+   return this.dict[Math.floor(Math.random() * this.dict.length) % n];
 }
 
 //influence from project in alg
