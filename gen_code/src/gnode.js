@@ -1,7 +1,8 @@
-var G_Node = function() {this};
-console.log(G_Node);
+var G_Node = function() {
+   this.edges = [];
+};
 
-G_Node.prototype.edges = [];
+console.log(G_Node);
 
 G_Node.prototype.depends_on = function (node)
 {
@@ -45,7 +46,7 @@ var topo_sort = function(nodes) {
    
    //call dfs with final call back to topological sort
    var sort = [];
-   dfs((elem) => {sort.push(elem)});
+   dfs((elem) => {sort.unshift(elem)});
    return sort;
 }
 module.exports = {G_Node: G_Node, topo_sort: topo_sort};

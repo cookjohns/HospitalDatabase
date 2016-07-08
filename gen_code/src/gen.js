@@ -84,7 +84,7 @@ var order = Node.topo_sort(nodes);
 
 order.forEach(
    (node) => {
-      //console.log(node);
-      gen_objects(node.elem, 100);
+      console.log(JSON.stringify(node));
+      //gen_objects(node.elem, 100);
    }
 );
