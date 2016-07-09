@@ -1,12 +1,16 @@
+//creates a graph node.
 var G_Node = function() {
    this.edges = [];
 };
 
+//creates link from provider -> dependie
 G_Node.prototype.depends_on = function (node)
 {
    node.link(this);
 };
 
+//links current object to node
+//follows simple graph rules
 G_Node.prototype.link = function (node)
 {
    if (node in this.edges) {} //do nothing already in there
@@ -47,4 +51,5 @@ var topo_sort = function(nodes) {
    dfs((elem) => {sort.unshift(elem)});
    return sort;
 }
+
 module.exports = {G_Node: G_Node, topo_sort: topo_sort};
