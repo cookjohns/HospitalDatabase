@@ -5,6 +5,7 @@ with the distinct name $output. This is for collating the tables. Each table
 has access to a special variable called $tables that contains an array
 of all the tables. Below is the definition of a table.
 
+~~~~
 //possible dependencies
 //practice is to name them with a _
 var _gen = require('./gen');
@@ -23,3 +24,4 @@ var $output = {
       //more attributes below
    ]
 }
+~~~~
