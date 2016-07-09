@@ -1,0 +1,7 @@
+{
+  "name": "RDGFP",
+  "dependencies": {
+    "xmldom": "^0.1.22",
+    "xpath": "0.0.23"
+  }
+}
