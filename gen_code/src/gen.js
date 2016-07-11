@@ -14,7 +14,9 @@ var gen_objects = function(table)
    var attr_name = '';
    for (var i = 0; i < num_entries; i++) {
       entry = {};
-      for (var j = 0; j < table.options.length; j++) {
+      //one less from options for the manditory
+      //post function pass
+      for (var j = 0; j < table.options.length - 1; j++) {
          attr_name = table.options[j].name;
          //constructs internal objects ref by attr_name
          entry[attr_name] = {};
@@ -23,7 +25,14 @@ var gen_objects = function(table)
       }
       entries.push(entry);
    }
-   return entries;
+
+   //post scripts may only be ran on finished tables
+   var functions = table.options[table.options.length - 1];
+   for (var i = 0; i < functions.length; i++) {
+      functions[i](); 
+   }
+
+   table.elem = entries;
 }
 
 //Returns a function to be used for generation
@@ -54,6 +63,37 @@ var gen_fkey = function(tables, foreign_table, key_name)
       return opt[0].
          elem[Math.floor(Math.random()*opt[0].elem.length)][key_name].value;
    };
+}
+
+var post_unique = function(table, options)
+{
+   var temp = table.elem;
+   //Filter for each constrant in options
+   option.forEach((constrant) => {
+      //create a new array of [key, value]
+      //pairs where keys are the unique attr tuples
+      temp = temp.map((tuple) => {
+         //return [key, value] pairs where
+         //key is an array of selected attributes
+         return [tuple.filter((attr) => {
+            return (attr in constrant);
+         }), tuple];
+      });
+
+      //Use map to filter down to unique keys
+      var unique_filter = new Map();
+      temp.forEach((elem) => {
+         unique_filter.set(elem[0].join(''), elem);
+      });
+
+      //get all unique [key, value] pairs
+      temp = unique_filter.values();
+
+      //get remaining tuples
+      temp = temp[1]; //all non-infringing tuples
+   });
+
+   //no need for return since table passed by reference
 }
 
 //tables are described by this format
