@@ -1,0 +1,29 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'test_uniqueness',
+   depends: [],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      {
+         name: 'id',
+         type: 'varchar(10)',
+         //gen 100 words from only 10 selections
+         //this is to test uniqueness
+         func: _gen.gen_def_from_words(10)
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: 
+         [
+            _gen.post_unique(
+               [
+                  ['id'] 
+               ])
+         ]
+      }
+   ]
+}
+

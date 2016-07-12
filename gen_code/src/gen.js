@@ -10,29 +10,30 @@ var gen_objects = function(table)
 {
    var num_entries = table.amount;
    var entries = [];
-   var entry = {};
+   var entry = [];
    var attr_name = '';
    for (var i = 0; i < num_entries; i++) {
-      entry = {};
+      entry = [];
       //one less from options for the manditory
       //post function pass
       for (var j = 0; j < table.options.length - 1; j++) {
          attr_name = table.options[j].name;
          //constructs internal objects ref by attr_name
-         entry[attr_name] = {};
-         entry[attr_name].type = table.options[j].type;
-         entry[attr_name].value = table.options[j].func();
+         entry[j] = {};
+         entry[j].name = attr_name;
+         entry[j].type = table.options[j].type;
+         entry[j].value = table.options[j].func();
       }
       entries.push(entry);
    }
 
-   //post scripts may only be ran on finished tables
-   var functions = table.options[table.options.length - 1];
-   for (var i = 0; i < functions.length; i++) {
-      functions[i](); 
-   }
-
    table.elem = entries;
+
+   //post scripts may only be ran on finished tables
+   var functions = table.options[table.options.length - 1].func;
+   for (var i = 0; i < functions.length; i++) {
+      functions[i](table); 
+   }
 }
 
 //Returns a function to be used for generation
@@ -65,35 +66,40 @@ var gen_fkey = function(tables, foreign_table, key_name)
    };
 }
 
-var post_unique = function(table, options)
+var post_unique = function(options)
 {
-   var temp = table.elem;
-   //Filter for each constrant in options
-   option.forEach((constrant) => {
-      //create a new array of [key, value]
-      //pairs where keys are the unique attr tuples
-      temp = temp.map((tuple) => {
-         //return [key, value] pairs where
-         //key is an array of selected attributes
-         return [tuple.filter((attr) => {
-            return (attr in constrant);
-         }), tuple];
+   return (table) => {
+      var temp = table.elem;
+      //Filter for each constrant in options
+      options.forEach((constrant) => {
+         //create a new array of [key, value]
+         //pairs where keys are the unique attr tuples
+         temp = temp.map((tuple) => {
+            //return [key, value] pairs where
+            //key is an array of selected attributes
+            var f_tuple = tuple.filter((attr) => {
+               return (constrant.includes(attr.name));
+            });
+
+            return [f_tuple, tuple];
+         });
+
+         //Use map to filter down to unique keys
+         var unique_filter = {};
+         temp.forEach((elem) => {
+            unique_filter[elem[0].reduce((str, attr) => {return str += attr.value},'')] = elem;
+         });
+
+         //get all unique values from [key, value] pairs
+         temp = [];
+         for (var elem in unique_filter) {
+            temp.push(unique_filter[elem][1]);
+         };
       });
 
-      //Use map to filter down to unique keys
-      var unique_filter = new Map();
-      temp.forEach((elem) => {
-         unique_filter.set(elem[0].join(''), elem);
-      });
-
-      //get all unique [key, value] pairs
-      temp = unique_filter.values();
-
-      //get remaining tuples
-      temp = temp[1]; //all non-infringing tuples
-   });
-
-   //no need for return since table passed by reference
+      //no need for return since table passed by reference
+      table.elem = temp;
+   }
 }
 
 //tables are described by this format
@@ -103,4 +109,4 @@ var post_unique = function(table, options)
 //   -> elem is seperate obj described by options
 // + Relation gen options and type: options
 
-module.exports = {gen_objects, gen_def_from_words, gen_fkey};
+module.exports = {gen_objects, gen_def_from_words, gen_fkey, post_unique};
