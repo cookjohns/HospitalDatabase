@@ -7,6 +7,7 @@ var run = function(err, data) {
    });
    console.log(data.tables[0].name, data.tables[0].elem, '\n');
    console.log(data.tables[1].name, data.tables[1].elem);
+   return tables;
 }
 
 var tables = collator.collate_strip_nodes('./definitions', run);
