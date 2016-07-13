@@ -10,6 +10,11 @@ var $output = {
          name: 'id',
          type: 'varchar(10)',
          func: _gen.gen_fkey($tables, 'Worker', 'id')
+      },
+      {
+         name: 'post',
+         type: 'varchar(10)',
+         func: [_gen.post_unique(['id'])]
       }
    ]
 }

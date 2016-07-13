@@ -3,10 +3,12 @@ var gen = require('./gen');
 
 var run = function(err, data) {
    data.tables.forEach((table) => {
-      table.elem = gen.gen_objects(table);
+      gen.gen_objects(table);
    });
-   console.log(data.tables[0].elem);
-   console.log(data.tables[1].elem);
+   data.tables.forEach((table) => {
+      console.log(table.name, table.elem, '\n');
+   });
+   return tables;
 }
 
 var tables = collator.collate_strip_nodes('./definitions', run);
