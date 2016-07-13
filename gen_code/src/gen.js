@@ -56,13 +56,17 @@ var gen_fkey = function(tables, foreign_table, key_name)
 {
    return () => {
       //find foreign table
-      //assume no duplicate tables
+      //assume unique table names
       var opt = tables.filter((table) => {
          return (table.name == foreign_table);
       }); 
       //return rnd f_key
-      return opt[0].
-         elem[Math.floor(Math.random()*opt[0].elem.length)][key_name].value;
+      return opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)].filter(
+            (attr) => {
+            //filters out all non-key attributes
+            //assume unique attr names
+            return (attr.name == key_name)
+            })[0].value;
    };
 }
 

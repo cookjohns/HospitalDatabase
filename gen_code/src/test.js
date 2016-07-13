@@ -5,8 +5,9 @@ var run = function(err, data) {
    data.tables.forEach((table) => {
       gen.gen_objects(table);
    });
-   console.log(data.tables[0].name, data.tables[0].elem, '\n');
-   console.log(data.tables[1].name, data.tables[1].elem);
+   data.tables.forEach((table) => {
+      console.log(table.name, table.elem, '\n');
+   });
    return tables;
 }
 
