@@ -40,11 +40,12 @@ var gen_objects = function(table)
 //of random words from a word dictionary.
 //The amount of data to randomly use
 //can be selected with n. IE only first n words.
-var gen_def_from_words = function(n = 100)
+var gen_def_from_words = function(n = 100, word_length)
 {
    return () => {
       var words = new Dict.Dictionary('words', 'words');
-      return words.rnd_def(n);
+      //for no word_length restriction do not pass argument
+      return words.rnd_def(n).substring(0, word_length);
    };
 }
 
