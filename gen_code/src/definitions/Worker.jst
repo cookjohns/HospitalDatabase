@@ -3,17 +3,17 @@ var $output = {
    name: 'Worker',
    depends: [],
    elem: [],
-   amount: 10,
+   amount: 100,
    options:
    [
       {
          name: 'id',
          type: 'varchar(10)',
-         func: _gen.gen_def_from_words() 
+         func: _gen.gen_def_from_words(50) 
       },
       {
          name: 'post',
-         type: 'n\a',
+         type: 'n/a',
          func: []
       }
    ]

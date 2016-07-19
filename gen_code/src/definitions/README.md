@@ -23,10 +23,9 @@ var $output = {
          func: X() // some generator function to call to create values
       },
       //more attributes below
-      { //the post field is mandatory
+      {
          name: 'post',
          type: 'n/a',
-         //the function field can be an empty array []
          func: [/*list of post script functions*/]
       }
    ]
