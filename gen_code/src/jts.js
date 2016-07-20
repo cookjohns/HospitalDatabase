@@ -12,7 +12,8 @@ var jsontosql = function(data, data_model)
                }, "").substring(0, temp1 - 1) + ")" +
                " values" + "(" + 
                tuple.reduce((prev, attr) => {
-                  temp2 += attr.value.length + 1;
+                  //makes sure value is always of string type
+                  temp2 += attr.value.toString().length + 1;
                   return prev + attr.value + ',';
                }, "").substring(0, temp2 - 1) + ");"); 
    });

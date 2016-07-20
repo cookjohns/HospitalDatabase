@@ -1,0 +1,35 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'prod',
+   depends: [],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      {
+         name: 'id',
+         type: 'varchar(10)',
+         func: _gen.gen_int(0, 100)
+      },
+      {
+         name: 'start_date',
+         type: 'varchar(10)',
+         func: _gen.gen_date({
+            id: 'test',
+            receiver: false,
+            pair: true,
+            tables: $tables,
+            foreign_table: 'prod',
+            attr_name: 'id',
+            start: "2015",
+            end: "2017"
+         })
+      },
+      {
+         name: 'post',
+         type: 'n/a',
+         func: []
+      }
+   ]
+}
+

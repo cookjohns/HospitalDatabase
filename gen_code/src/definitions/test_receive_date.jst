@@ -1,0 +1,29 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'receiver',
+   depends: ['prod'],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      {
+         name: 'id',
+         type: 'varchar(10)',
+         func: _gen.gen_date_fkey('test')
+      },
+      {
+         name: 'end_date',
+         type: 'varchar(10)',
+         func: _gen.gen_date({
+            id: 'test',
+            attr_name: 'id',
+            receiver: true
+         })
+      },
+      {
+         name: 'post',
+         type: 'n/a',
+         func: []
+      }
+   ]
+}

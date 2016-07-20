@@ -8,7 +8,7 @@ var run = function(err, data) {
       gen.gen_objects(table);
    });
    data.tables.forEach((table) => {
-      console.log(table.name, table.elem, '\n');
+//      console.log(table.name, table.elem, '\n');
    });
    var sql = [];
    data.tables.forEach((table) => {
