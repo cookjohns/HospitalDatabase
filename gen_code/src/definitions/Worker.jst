@@ -3,14 +3,29 @@ var $output = {
    name: 'Worker',
    depends: [],
    elem: [],
-   amount: 10,
+   amount: 100,
    options:
    [
       {
-         name: 'id',
-         type: 'varchar(10)',
-         func: _gen.gen_def_from_words() 
+         name: 'employeeId',
+         type: 'integer',
+		 func: () => Math.floor(Math.random() * 100000)
       },
+	  {
+		name: 'firstName',
+		type: 'varchar(30)',
+		func: _gen.gen_def_from_words()
+	  },
+	  {
+		name: 'lastName',
+		type: 'varchar(20)',
+		func: _gen.gen_def_from_words()
+	  },
+	  {
+		name: 'salary',
+		type: 'integer',
+		func: () => Math.floor(Math.random() * 100000)
+	  },
       {
          name: 'post',
          type: 'n\a',
