@@ -182,7 +182,7 @@ var gen_date = function(options)
             i = 0
             while (i < retry_count) {
                var end_date = rnd_date();
-               if (end_date > (start_date || {}))
+               if (end_date > (start_date))
                   break;
                else i++;
             }
