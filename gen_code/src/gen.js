@@ -79,9 +79,17 @@ var gen_real = function(start = 0, end = 100, singleprecision)
 //to prevent errors if the pairing functionality is used.
 var gen_date = function(options)
 {
+   //define constants for use below
+   const ID_INDEX = 0;
+   const START_DATE_INDEX = 1;
+   const END_DATE_INDEX = 2;
+
    return ($table, $tuple) => {
       //define options
       var attr_name = options.attr_name;
+      //id depends on an attrbute value
+      //Ex) cust = 1001 startdate = 2015
+      //links with cust = 1001 enddate = 2016
       var id = (options.id
          + ($tuple.find((elem) => {return elem.name == attr_name;}) || {}).value
                 || '');
@@ -103,11 +111,14 @@ var gen_date = function(options)
                       + input_start_date.getFullYear())
                       || date.getFullYear()));
          //sets month
+
+         //In between start and end year.
          if (date.getFullYear() < input_end_date.getFullYear()
              && date.getFullYear() > input_start_date.getFullYear()) {
             //generate any month 0-11
             date.setMonth(Math.floor(Math.random() * 12));
          }
+         //Year is the start and end year
          else if (input_start_date.getFullYear() ==
                   input_end_date.getFullYear()) {
             date.setMonth(Math.floor(Math.random()*
@@ -115,11 +126,13 @@ var gen_date = function(options)
                       input_start_date.getMonth()) +
                       input_start_date.getMonth())); 
          }
+         //Year is the start year
          else if (input_start_date.getFullYear() ==
                   date.getFullYear()) {
             date.setMonth(Math.floor(Math.random()*
                      input_start_date.getMonth()));
          }
+         //Year is the end year
          else {
             date.setMonth(Math.floor(Math.random()*
                      input_end_date.getMonth()));
@@ -144,27 +157,35 @@ var gen_date = function(options)
 
       //uses a fifo queue to match pairings between runs
       if (receiver) {
+         //returns index of first end date
          var index = gen_date.prototype.ids.findIndex((elem) => {
-            return elem[0] ==  id;
+            return elem[ID_INDEX] ==  id;
          });
 
-         var elem = gen_date.prototype.ids[index][2];
-         // Thanks to http://stackoverflow.com/questions/5767325/remove-a-particular-element-from-an-array-in-javascript
+         //get end date
+         var elem = gen_date.prototype.ids[index][END_DATE_INDEX];
+         // Thanks to http://stackoverflow.com/questions/5767325
+         // /remove-a-particular-element-from-an-array-in-javascript
          // for pointing the proper syntax out
+         // 
+         // Remove [id, start, end] tuple from list of dates
          gen_date.prototype.ids.splice(index, 1);
          return elem.toISOString();
       }
       else {
+         //if pairing mode is on
          if (pair) {
             var i = 0;
 
+            //find prev_end_date so that a start date
+            //may be generated after it.
             var prev_end_date = undefined;
             for (var j = gen_date.prototype.ids.length; j > -1; j--) {
                      if (gen_date.prototype.ids[j]
-                         && gen_date.prototype.ids[j][0] == id)
-                        prev_end_date = gen_date.prototype.ids[j][2];
+                         && gen_date.prototype.ids[j][ID_INDEX] == id)
+                        prev_end_date = gen_date.prototype.ids[j][END_DATE_INDEX];
             }
-
+            //generate date after prev_end_date
             if (prev_end_date) {
                while (i < retry_count) {
                   var start_date = rnd_date();
@@ -175,10 +196,13 @@ var gen_date = function(options)
                } 
                start_date = (i == retry_count) ? undefined : start_date;
             }
+            //If their was no prev_end_date (first interation)
+            //then create a start date
             else {
                var start_date = rnd_date();
             }
 
+            //generate end date coming after start date
             i = 0
             while (i < retry_count) {
                var end_date = rnd_date();
@@ -188,10 +212,12 @@ var gen_date = function(options)
             }
             end_date = (i == retry_count) ? start_date : end_date;
 
+            //push [id, start, end] tuple into list of dates
             gen_date.prototype.ids.push(
                   [id, start_date, end_date]);
             return start_date.toISOString();
          }
+         //pairing mode not on so return random date
          else {
             return rnd_date().toISOString();
          }
