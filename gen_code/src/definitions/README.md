@@ -23,12 +23,32 @@ var $output = {
          func: X() // some generator function to call to create values
       },
       //more attributes below
-      { //the post field is mandatory
+      {
          name: 'post',
          type: 'n/a',
-         //the function field can be an empty array []
          func: [/*list of post script functions*/]
       }
    ]
 }
+~~~~
+
+~~~~
+//Generator functions
+
+//n: is the size of dictionary
+//word_length: is the max length of the word (default full length)
+gen_def_from_words(n = 100, word_length)
+
+//tables: array of tables in jst reference as $tables
+//foreign_table: string of foreign table name
+//key_name: foreign key name
+gen_fkey(tables, foreign_table, key_name)
+
+//Post run functions
+
+//options: array of attribute names for uniqueness
+//   ex - options = [['id']] => id is unique
+//   ex - options = [['id', 'name']] => (id,name) is unique
+//   ex - options = [['id'],['id','name']] => both of the above
+post_unique(options)
 ~~~~

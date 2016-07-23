@@ -3,7 +3,7 @@ var $output = {
    name: 'test',
    depends: ['Worker'],
    elem: [],
-   amount: 10,
+   amount: 100,
    options:
    [
       {
@@ -14,7 +14,7 @@ var $output = {
       {
          name: 'post',
          type: 'varchar(10)',
-         func: [_gen.post_unique(['id'])]
+         func: [_gen.post_unique([['id']])]
       }
    ]
 }
