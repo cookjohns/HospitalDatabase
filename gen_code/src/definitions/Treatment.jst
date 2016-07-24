@@ -17,6 +17,11 @@ var $output = {
         func: _gen.gen_def_from_words()
       },
       {
+        name: 'isMedication',
+        type: 'bit',
+        func: _gen.gen_int(0, 2)
+      },
+      {
          name: 'post',
          type: 'n\a',
          func: [_gen.post_unique(['treatmentId'])]
