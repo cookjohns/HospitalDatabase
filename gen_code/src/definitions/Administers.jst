@@ -9,16 +9,17 @@ var $output = {
       { // foreign key
          name: 'employeeID',
          type: 'integer',
-		 func: _gen.gen_fkey($tables, 'Workers', 'employeeID')
+		   func: _gen.gen_fkey($tables, 'Workers', 'employeeID')
       },
       {
-	  name: 'admin',
-	  type: 'integer',
-       	  func: () => Math.floor(Math.random() * 100000)
+	      name: 'admin',
+	      type: 'integer',
+       	func: _gen.gen_int(0, 100000)
       },
-	name: 'timeAdministered',
-	  type: 'integer',
-       	  func: () => Math.floor(Math.random() * (0.24 - 0 + 1)) + 0
+      {
+	      name: 'timeAdministered',
+	      type: 'integer',
+       	func: () => Math.floor(Math.random() * (0.24 - 0 + 1)) + 0
       },
       {
          name: 'post',

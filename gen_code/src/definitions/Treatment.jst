@@ -9,12 +9,12 @@ var $output = {
       { // foreign key
          name: 'treatmentId',
          type: 'integer',
-		 func: _gen.gen_fkey($tables, 'Treatment', 'treatmentId')
+         func: _gen.gen_fkey($tables, 'Treatment', 'treatmentId')
       },
       {
-	  name: 'name',
-	  type: 'varchar(30)',
-       	  func: _gen.gen_def_from_words()
+        name: 'name',
+        type: 'varchar(30)',
+        func: _gen.gen_def_from_words()
       },
       {
          name: 'post',

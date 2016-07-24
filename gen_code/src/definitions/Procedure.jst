@@ -9,22 +9,22 @@ var $output = {
       { // foreign key
          name: 'treatmentID',
          type: 'integer',
-		 func: _gen.gen_fkey($tables, 'Treatment', 'treatmentID')
+         func: _gen.gen_fkey($tables, 'Treatment', 'treatmentID')
       },
       { // foreign key
          name: 'name',
          type: 'varchar(20)',
-		 func: _gen.gen_fkey($tables, 'Treatment', 'name')
+         func: _gen.gen_fkey($tables, 'Treatment', 'name')
       },
       {
-	  name: 'treatmentID',
-	  type: 'integer',
-       	  func: () => Math.floor(Math.random() * 100000)
+         name: 'treatmentID',
+         type: 'integer',
+         func: _gen.gen_int(0, 100000)
       },
       {
-	  name: 'name',
-	  type: 'varchar(20)',
-       	  func: () => Math.floor(Math.random() * 100000)
+         name: 'name',
+         type: 'varchar(20)',
+         func: _gen.gen_def_from_words(100, 20)
       },
       {
          name: 'post',
