@@ -1,0 +1,20 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'Admin',
+   depends: ['Worker'],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      {
+         name: 'employeeId',
+         type: 'integer',
+		 func: _gen.gen_fkey($tables, 'Worker', 'employeeId')
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: [_gen.post_unique(['employeeId'])]
+      }
+   ]
+}

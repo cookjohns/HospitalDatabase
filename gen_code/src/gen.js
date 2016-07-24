@@ -235,6 +235,14 @@ var gen_date_fkey = function(id) {
    };
 }
 
+//Generates a random number between 0 and max
+var gen_random_number = function(max = 100000)
+{
+	return () => {
+		return Math.floor(Math.random() * max)
+	};
+}
+
 //Returns a function that can be used to get
 //valide foreign keys in a table. Must have
 //specified proper dependencies and topo-sorted

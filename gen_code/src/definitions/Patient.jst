@@ -1,0 +1,40 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'Patient',
+   depends: [],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      {
+         name: 'patientId',
+         type: 'integer',
+		 func: () => Math.floor(Math.random() * 100000)
+      },
+	  {
+		name: 'firstName',
+		type: 'varchar(30)',
+		func: _gen.gen_def_from_words()
+	  },
+	  {
+		name: 'lastName',
+		type: 'varchar(20)',
+		func: _gen.gen_def_from_words()
+	  },
+	  {
+		name: 'insurancePolicy',
+		type: 'integer',
+		func: () => Math.floor(Math.random() * 100000)
+	  },
+	  {
+		name: 'emergencyContact',
+		type: 'varchar(50)'
+		func: _gen.gen_def_from_words()
+	  },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: []
+      }
+   ]
+}
