@@ -6,4 +6,3 @@ CREATE TABLE Treatment (
    isMedication bit, // return 1 for medication, 0 for procedure
    PRIMARY KEY (treatmentID)
 );
-
