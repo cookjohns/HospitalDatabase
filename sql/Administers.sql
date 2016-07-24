@@ -6,4 +6,3 @@ CREATE TABLE Administers (
    PRIMARY KEY (timeAdministered, adminID),
    FOREIGN KEY (employeeID) REFERENCES Worker (employeeID)
 );
-
