@@ -1,6 +1,6 @@
 drop table if exists Administers; 
 
-create table Administers (
+CREATE TABLE Administers (
    timeAdministered datetime,
    adminID integer,
    PRIMARY KEY (timeAdministered, adminID),
