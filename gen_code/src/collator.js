@@ -87,7 +87,7 @@ var create_tables = function (options, callback) {
 //Collates all the individual table files together and optionally sorts them.
 //Refactoring can be done in the sorting method to get rid of this function.
 //In: obvious
-var collate = function (path_to_tables, callback, do_topo_sort = 'true') {
+var collate = function (path_to_tables, callback, do_topo_sort) {
    if (do_topo_sort == undefined) do_topo_sort = true;
    create_tables({path_to_tables, do_topo_sort}, create_nodes(callback));
 }
