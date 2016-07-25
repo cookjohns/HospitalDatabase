@@ -1,0 +1,31 @@
+
+var _gen = require('./gen');
+var $output = {
+   name: 'Admits',
+   depends: ['Worker'],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      { // foreign key
+         name: 'employeeID',
+         type: 'integer',
+		   func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
+      },
+      { // foreign key
+	      name: 'patientID',
+	      type: 'integer',
+       	func: _gen.gen_fkey($tables, 'Patient', 'patientID')
+      },
+      {
+	      name: 'timeAdmitted',
+	      type: 'datetime',
+       	func: () => Math.floor(Math.random() * (0.24 - 0 + 1)) + 0
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: []
+      }
+   ]
+}
