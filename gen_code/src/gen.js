@@ -159,10 +159,11 @@ var gen_date = function(options)
       if (receiver) {
          //returns index of first end date
          var index = gen_date.prototype.ids.findIndex((elem) => {
-            return elem[ID_INDEX] ==  id;
+            return elem[ID_INDEX].startsWith(options.id);
          });
 
          //get end date
+         console.log(options);
          var elem = gen_date.prototype.ids[index][END_DATE_INDEX];
          // Thanks to http://stackoverflow.com/questions/5767325
          // /remove-a-particular-element-from-an-array-in-javascript
