@@ -1,0 +1,30 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'Treatment',
+   depends: [],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      { // foreign key
+         name: 'treatmentId',
+         type: 'integer',
+         func: _gen.gen_fkey($tables, 'Treatment', 'treatmentId')
+      },
+      {
+        name: 'name',
+        type: 'varchar(30)',
+        func: _gen.gen_def_from_words()
+      },
+      {
+        name: 'isMedication',
+        type: 'bit',
+        func: _gen.gen_int(0, 2)
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: [_gen.post_unique(['treatmentId'])]
+      }
+   ]
+}
