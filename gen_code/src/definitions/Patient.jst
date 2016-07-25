@@ -7,7 +7,7 @@ var $output = {
    options:
    [
       {
-         name: 'patientId',
+         name: 'patientID',
          type: 'integer',
 		 func: () => Math.floor(Math.random() * 100000)
       },
@@ -28,7 +28,7 @@ var $output = {
 	  },
 	  {
 		name: 'emergencyContact',
-		type: 'varchar(50)'
+		type: 'varchar(50)',
 		func: _gen.gen_def_from_words()
 	  },
       {

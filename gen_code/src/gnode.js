@@ -6,6 +6,8 @@ var G_Node = function() {
 //creates link from provider -> dependie
 G_Node.prototype.depends_on = function (node)
 {
+   console.log(this.elem.name);
+   console.log(this.elem.depends);
    node.link(this);
 };
 

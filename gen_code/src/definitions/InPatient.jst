@@ -7,14 +7,14 @@ var $output = {
    options:
    [
       {
-         name: 'patientId',
+         name: 'patientID',
          type: 'integer',
-		 func: _gen.gen_fkey($tables, 'Patient', 'patientId')
+		 func: _gen.gen_fkey($tables, 'Patient', 'patientID')
       },
       {
          name: 'post',
          type: 'n\a',
-         func: [_gen.post_unique(['id'])]
+         func: [_gen.post_unique(['patientID'])]
       }
    ]
 }
