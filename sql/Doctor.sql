@@ -1,8 +1,8 @@
 drop table if exists Doctor;
 
 CREATE TABLE Doctor (
-	employeeId integer,
+	employeeID integer,
 	consultingPrivilege byte,
-	PRIMARY KEY (employeeId),
-	FOREIGN KEY (employeeId) REFERENCES Worker.employeeId
+	PRIMARY KEY (employeeID),
+	FOREIGN KEY (employeeID) REFERENCES Worker.employeeID
 );
