@@ -257,6 +257,7 @@ var gen_fkey = function(tables, foreign_table, key_name)
          return (table.name == foreign_table);
       }); 
       //return rnd f_key
+      console.log(foreign_table);
       return (opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)] || []).filter(
             (attr) => {
             //filters out all non-key attributes
