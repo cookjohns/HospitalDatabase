@@ -1,7 +1,7 @@
 var _gen = require('./gen');
 var $output = {
    name: 'Doctor',
-   depends: ['Worker'],
+   depends: ['Worker', 'TreatmentGiver'],
    elem: [],
    amount: 100,
    options:
@@ -11,15 +11,15 @@ var $output = {
          type: 'integer',
 		 func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
       },
-	  {
-		name: 'consultingPrivilege',
-		type: 'byte', //boolean flag
-		func: () => Math.floor(Math.random() * 10) % 2 //returns either 0 or 1 -- I think
-	  },
+      {
+         name: 'treatmentGiverID',
+         type: 'integer',
+         func: _gen.gen_fkey($tables, 'TreatmentGiver', 'treatmentGiverID')
+      },
       {
          name: 'post',
          type: 'n\a',
-         func: [_gen.post_unique(['employeeID'])]
+         func: [_gen.post_unique([['employeeID'], ['treatmentGiverID']])]
       }
    ]
 }
