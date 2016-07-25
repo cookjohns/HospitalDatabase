@@ -6,11 +6,11 @@ var $output = {
    amount: 100,
    options:
    [
-      {
+     {
          name: 'patientID',
          type: 'integer',
-		 func: () => Math.floor(Math.random() * 100000)
-      },
+         func: _gen.gen_int(0, 100000)
+     },
 	  {
 		name: 'firstName',
 		type: 'varchar(30)',
@@ -24,7 +24,7 @@ var $output = {
 	  {
 		name: 'insurancePolicy',
 		type: 'integer',
-		func: () => Math.floor(Math.random() * 100000)
+		func: _gen.gen_int(0, 100000)
 	  },
 	  {
 		name: 'emergencyContact',
