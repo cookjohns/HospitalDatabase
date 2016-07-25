@@ -1,5 +1,7 @@
+drop table if exists Admin;
+
 CREATE TABLE Admin (
-	employeeId integer,
-	PRIMARY KEY (employeeId),
-	FOREIGN KEY (employeeId) REFERENCES Worker.employeeId
+	employeeID integer,
+	PRIMARY KEY (employeeID),
+	FOREIGN KEY (employeeID) REFERENCES Worker.employeeID
 );

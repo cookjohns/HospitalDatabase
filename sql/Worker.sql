@@ -1,3 +1,5 @@
+drop table if exists Worker;
+
 CREATE TABLE Worker (
 	employeeId integer,
 	firstName varchar(20) NOT NULL,

@@ -1,3 +1,5 @@
+drop table if exists OutPatient;
+
 CREATE TABLE OutPatient (
 	patientId integer,
 	PRIMARY KEY (patientId),

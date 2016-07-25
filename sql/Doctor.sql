@@ -1,3 +1,5 @@
+drop table if exists Doctor;
+
 CREATE TABLE Doctor (
 	employeeId integer,
 	consultingPrivilege byte,

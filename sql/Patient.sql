@@ -1,3 +1,5 @@
+drop table if exists Patient;
+
 CREATE TABLE Patient (
 	patientId integer,
 	firstName varchar(20) NOT NULL,
