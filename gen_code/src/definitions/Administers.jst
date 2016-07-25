@@ -1,20 +1,20 @@
 var _gen = require('./gen');
 var $output = {
    name: 'Administers',
-   depends: ['Worker'],
+   depends: ['TreatmentGiver', 'Patient'],
    elem: [],
    amount: 100,
    options:
    [
       { // foreign key
-         name: 'employeeID',
+         name: 'treatmentGiverID',
          type: 'integer',
-		   func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
+		   func: _gen.gen_fkey($tables, 'TreatmentGiver', 'treatmentGiverID')
       },
       {
-	      name: 'admin',
+	      name: 'patientID',
 	      type: 'integer',
-       	func: _gen.gen_int(0, 100000)
+       	func: _gen.gen_fkey($tables, 'Patient', 'patientID')
       },
       {
 	      name: 'timeAdministered',
