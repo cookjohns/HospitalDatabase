@@ -9,19 +9,19 @@ var $output = {
       {
          name: 'AdminID',
          type: 'dnm',
-         func: _gen.gen_fkey($tables, 'Admin', 'employeeId')
+         func: _gen.gen_fkey($tables, 'Admin', 'employeeID')
       },
       {
-         name: 'PatientID',
+         name: 'patientID',
          type: 'dnm',
-         func: _gen.gen_fkey($tables, 'Patient', 'PatientID')
+         func: _gen.gen_fkey($tables, 'Patient', 'patientID')
       },
       {
          name: 'EndDateTime',
          type: 'dnm',
          func: _gen.gen_date({
             id: 'addc',
-            attr_name: 'PatientID',
+            attr_name: 'patientID',
             receiver: true
          })
       },

@@ -1,0 +1,37 @@
+var _gen = require('./gen');
+var $output = {
+   name: 'Admits',
+   depends: ['Worker', 'Patient'],
+   elem: [],
+   amount: 100,
+   options:
+   [
+      { // foreign key
+         name: 'employeeID',
+         type: 'integer',
+		   func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
+      },
+      { // foreign key
+	      name: 'patientID',
+	      type: 'integer',
+         func: _gen.gen_fkey($tables, 'Patient', 'patientID')
+      },
+      {
+	      name: 'timeAdmitted',
+	      type: 'datetime',
+       	func: _gen.gen_date({
+            id: 'addc',
+            receiver: false,
+            pair: true,
+            attr_name: 'employeeID',
+            start: '01-01-2014',
+            end: '01-12-2017'
+         })
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: []
+      }
+   ]
+}
