@@ -12,25 +12,27 @@ var $output =	{
 			func: _gen.gen_int(151, 170)
 		},
 		{
-			name: 'employeeId',
+			name: 'employeeID',
 			type: 'integer',
-			func: _gen.gen_fkey($tables, 'Worker', 'employeeId')
+			func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
 		},
 		{
 			name: 'roomDescription',
 			type: 'varchar(10)',
 			func: () => {
-				var cart = Math.floor(Math.random() * 10) % 4;
+				var cart = Math.floor(Math.random() * 10) % 2;
 				switch(cart)	{
 					case 0:
 						return "Reading Cart";
 					case 1:
 						return "Snack Cart";
+            }
+         }
 		},
 		{
 			name: 'volunteerRoom',
 			type: 'Boolean',
-			func: () => true
+			func: () => {return true;}
 		},
 		{
 			name: 'post',
