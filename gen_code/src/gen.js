@@ -260,10 +260,8 @@ var gen_fkey = function(tables, foreign_table, key_name)
             (attr) => {
             //filters out all non-key attributes
             //assume unique attr names
-            console.log(foreign_table, key_name, attr.name == key_name, attr.name, attr.value);
             return (attr.name == key_name)
             });
-      console.log(ans);
       return ans.value;
    };
 }
