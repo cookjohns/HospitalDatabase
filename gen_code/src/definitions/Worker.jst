@@ -7,9 +7,9 @@ var $output = {
    options:
    [
       {
-         name: 'employeeId',
+         name: 'employeeID',
          type: 'integer',
-		 func: () => Math.floor(Math.random() * 100000)
+		 func: _gen.gen_int(0, 100000)
       },
 	  {
 		name: 'firstName',
@@ -21,10 +21,18 @@ var $output = {
 		type: 'varchar(20)',
 		func: _gen.gen_def_from_words()
 	  },
+     {
+        name: 'hireDate',
+        type: 'datetime',
+        func: _gen.gen_date({
+           start: '01-01-2012',
+           end: '12-01-2015'
+        })
+     },
 	  {
 		name: 'salary',
 		type: 'integer',
-		func: () => Math.floor(Math.random() * 100000)
+		func: _gen.gen_int(0, 100000)
 	  },
       {
          name: 'post',

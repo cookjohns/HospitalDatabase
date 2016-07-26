@@ -1,0 +1,25 @@
+var _gen = require('./gen');
+var $output =	{
+	name: 'PatientRoom',
+	depends: ['Patient'],
+	elem: [],
+	amount: 200,
+	options:
+	[
+		{
+			name: 'roomNumber',
+			type: 'integer',
+			func: _gen.gen_int(0, 100)
+		},
+		{
+			name: 'patientID',
+			type: 'integer',
+			func: _gen.gen_fkey($tables, 'Patient', 'patientID')
+		},
+		{
+			name: 'post',
+			type: 'n\a',
+			func: [_gen.post_unique(['roomNumber'])]
+		}
+	]
+}

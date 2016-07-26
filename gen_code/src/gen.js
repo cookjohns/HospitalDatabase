@@ -97,7 +97,7 @@ var gen_date = function(options)
       var start = (options.start || '');
       var end = (options.end || '');
       var receiver = (options.receiver || false);
-      var retry_count = 1000;
+      var retry_count = 10000;
 
       var input_start_date = new Date(start);
       var input_end_date = new Date(end);
@@ -159,7 +159,7 @@ var gen_date = function(options)
       if (receiver) {
          //returns index of first end date
          var index = gen_date.prototype.ids.findIndex((elem) => {
-            return elem[ID_INDEX] ==  id;
+            return elem[ID_INDEX].startsWith(options.id);
          });
 
          //get end date
@@ -256,12 +256,13 @@ var gen_fkey = function(tables, foreign_table, key_name)
          return (table.name == foreign_table);
       }); 
       //return rnd f_key
-      return (opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)] || []).filter(
+      var ans = (opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)] || []).find(
             (attr) => {
             //filters out all non-key attributes
             //assume unique attr names
             return (attr.name == key_name)
-            })[0].value;
+            });
+      return ans.value;
    };
 }
 

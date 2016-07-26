@@ -97,7 +97,10 @@ var collate = function (path_to_tables, callback, do_topo_sort) {
 var collate_strip_nodes = function (path_to_tables, callback, do_topo_sort) {
    collate(path_to_tables, 
    (err, data) => {
-      var tables = data.nodes.map((node) => {return node.elem});
+      var tables = data.nodes.map((node) => {
+         console.log(node.elem.name);
+         return node.elem
+      });
       callback(null, {tables}); 
    },
    do_topo_sort);

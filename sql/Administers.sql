@@ -1,8 +1,12 @@
 drop table if exists Administers; 
 
 CREATE TABLE Administers (
-   timeAdministered datetime,
-   adminID integer,
-   PRIMARY KEY (timeAdministered, adminID),
-   FOREIGN KEY (employeeID) REFERENCES Worker (employeeID)
+   timeAdministered datetime NOT NULL,
+   treatmentGiverID integer,
+   treatmentID integer,
+   patientID integer,
+   PRIMARY KEY (treatmentID, treatmentGiverID, patientID),
+   FOREIGN KEY (treatmentGiverID) REFERENCES TreatmentGiver(treatmentGiverID),
+   FOREIGN KEY (patientID) REFERENCES Patient(patientID),
+   FOREIGN KEY (treatmentID) REFERENCES Treatment(treatmentID)
 );

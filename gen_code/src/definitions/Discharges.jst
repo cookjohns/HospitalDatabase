@@ -3,32 +3,32 @@ var $output = {
    name: 'Discharges',
    depends: ['Admin', 'Patient'],
    elem: [],
-   amount: 100,
+   amount: 200,
    options:
    [
       {
          name: 'AdminID',
          type: 'dnm',
-         func: _gen.gen_fkey($tables, 'Admin', 'employeeId')
+         func: _gen.gen_fkey($tables, 'Admin', 'employeeID')
       },
       {
-         name: 'PatientID',
+         name: 'patientID',
          type: 'dnm',
-         func: _gen.gen_fkey($tables, 'Patient', 'PatientID')
+         func: _gen.gen_fkey($tables, 'Patient', 'patientID')
       },
       {
-         name: 'EndDateTime',
+         name: 'date',
          type: 'dnm',
          func: _gen.gen_date({
             id: 'addc',
-            attr_name: 'PatientID',
+            attr_name: 'patientID',
             receiver: true
          })
       },
       {
          name: 'post',
          type: 'n/a',
-         func: [_gen.post_unique([['PatientID', 'EndDateTime']])]
+         func: [_gen.post_unique([['patientID', 'date']])]
       }
    ]
 }
