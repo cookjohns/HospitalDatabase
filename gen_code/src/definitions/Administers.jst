@@ -1,7 +1,7 @@
 var _gen = require('./gen');
 var $output = {
    name: 'Administers',
-   depends: ['TreatmentGiver', 'Patient'],
+   depends: ['TreatmentGiver', 'Patient', 'Treatment'],
    elem: [],
    amount: 100,
    options:
@@ -15,6 +15,11 @@ var $output = {
 	      name: 'patientID',
 	      type: 'integer',
        	func: _gen.gen_fkey($tables, 'Patient', 'patientID')
+      },
+      {
+         name: 'treatmentID',
+         type: 'integer',
+         func: _gen.gen_fkey($tables, 'Treatment', 'treatmentID')
       },
       {
 	      name: 'timeAdministered',

@@ -256,12 +256,15 @@ var gen_fkey = function(tables, foreign_table, key_name)
          return (table.name == foreign_table);
       }); 
       //return rnd f_key
-      return (opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)] || []).filter(
+      var ans = (opt[0].elem[Math.floor(Math.random()*opt[0].elem.length)] || []).find(
             (attr) => {
             //filters out all non-key attributes
             //assume unique attr names
+            console.log(foreign_table, key_name, attr.name == key_name, attr.name, attr.value);
             return (attr.name == key_name)
-            })[0].value;
+            });
+      console.log(ans);
+      return ans.value;
    };
 }
 
