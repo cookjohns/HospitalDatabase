@@ -3,7 +3,7 @@ var $output = {
    name: 'Discharges',
    depends: ['Admin', 'Patient'],
    elem: [],
-   amount: 100,
+   amount: 200,
    options:
    [
       {
@@ -17,7 +17,7 @@ var $output = {
          func: _gen.gen_fkey($tables, 'Patient', 'patientID')
       },
       {
-         name: 'EndDateTime',
+         name: 'date',
          type: 'dnm',
          func: _gen.gen_date({
             id: 'addc',
@@ -28,7 +28,7 @@ var $output = {
       {
          name: 'post',
          type: 'n/a',
-         func: [_gen.post_unique([['PatientID', 'EndDateTime']])]
+         func: [_gen.post_unique([['patientID', 'date']])]
       }
    ]
 }

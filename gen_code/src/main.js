@@ -8,14 +8,13 @@ var run = function(err, data) {
       gen.gen_objects(table);
    });
    data.tables.forEach((table) => {
-//      console.log(table.name, table.elem, '\n');
    });
    var sql = [];
    data.tables.forEach((table) => {
       sql.push(jsontosql.jsontosql(table));
    });
 
-   fs.writeFile('test.sql', ''); //empty file
+   fs.writeFile('output.sql', ''); //empty file
 
    sql.forEach((table) => {
       var output = '';
@@ -24,7 +23,7 @@ var run = function(err, data) {
          output += tuple + '\n';
       });
       //write with append
-      fs.writeFile('test.sql', output, {flag: 'a'});
+      fs.writeFile('output.sql', output, {flag: 'a'});
    });
 }
 
