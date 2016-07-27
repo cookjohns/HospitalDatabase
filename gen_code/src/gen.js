@@ -159,7 +159,7 @@ var gen_date = function(options)
       if (receiver) {
          //returns index of first end date
          var index = gen_date.prototype.ids.findIndex((elem) => {
-            return elem[ID_INDEX].startsWith(options.id);
+            return elem[ID_INDEX] === id;
          });
 
          //get end date
