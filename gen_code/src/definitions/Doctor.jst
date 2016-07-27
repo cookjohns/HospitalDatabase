@@ -9,12 +9,17 @@ var $output = {
       {
          name: 'employeeID',
          type: 'integer',
-		 func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
+         func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
       },
       {
          name: 'treatmentGiverID',
          type: 'integer',
          func: _gen.gen_fkey($tables, 'TreatmentGiver', 'treatmentGiverID')
+      },
+      {
+         name: 'admittingPrivilege',
+         type: 'integer',
+         func: _gen.gen_int(0, 2)
       },
       {
          name: 'post',
