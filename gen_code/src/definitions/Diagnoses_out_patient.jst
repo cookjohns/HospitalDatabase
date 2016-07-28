@@ -1,7 +1,11 @@
 var _gen = require('./gen');
 var $output = {
    //for out patients
-   name: 'Diagnoses',
+   //lower case for the purpose of
+   //printing the right name in sql (case-insensitive)
+   //but not interfering with inpatient which is used
+   //for admitting, etc.
+   name: 'diagnoses',
    depends: ['Doctor', 'OutPatient'],
    elem: [],
    amount: 200,
