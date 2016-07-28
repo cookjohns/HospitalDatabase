@@ -9,49 +9,36 @@
 							where A.patientID = C.patientID);
 	--2) 
 	-- List the rooms that are currently unoccupied.
-	-- WORKS!
+	-- WORKS! NOW!
 	SELECT pr.roomNumber AS roomNumber
 	FROM PatientRoom pr
-	EXCEPT
-	SELECT pr.roomNumber
-	FROM PatientRoom pr
-		JOIN (
-			SELECT p.patientId
-			FROM Patient p LEFT JOIN Discharges d ON p.patientId = d.patientId WHERE d.date IS NULL) currentPatients
-		ON pr.patientId = currentPatients.patientId;
+	WHERE pr.roomNumber NOT IN (
+		SELECT roomNumber
+		FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+		WHERE A.timeAdmitted > (select MAX (date)
+								from Discharges as C
+								where A.patientID = C.patientID));
 
 	--3) 
 	-- List all rooms in the hospital along with patient names and admission dates for those that are occupied.
-	SELECT allRooms.roomNumber, allRooms.firstName, allRooms.lastName, a.timeAdmitted
-	FROM Admits a
-		JOIN (
-			SELECT pr.roomNumber, currentPatients.patientId, currentPatients.firstName, currentPatients.lastName
-			FROM PatientRoom pr
-			LEFT JOIN (
-				SELECT p.patientId, p.firstName, p.lastName
-				FROM Patient p LEFT JOIN Discharges d ON p.patientId = d.patientId WHERE d.date IS NULL) currentPatients
-			ON pr.patientId = currentPatients.patientId) allRooms
-		ON a.patientId = allRooms.patientId
-	ORDER BY allRooms.roomNumber;
+	
+	SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
+	FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+	WHERE A.timeAdmitted > (select MAX (date)
+							from Discharges as C
+							where A.patientID = C.patientID)
 							
-	SELECT pr.roomNumber, currentPatients.patientId, currentPatients.firstName, currentPatients.lastName
-	FROM (PatientRoom pr
-	LEFT JOIN
-		(SELECT p.patientId, p.firstName, p.lastName
-		FROM Patient p LEFT JOIN Discharges d ON p.patientId = d.patientId WHERE d.date IS NULL) currentPatients) join 
-	ON currentPatients.patientId = pr.patientId;
+	UNION
 	
-	SELECT * FROM PatientRoom JOIN Admits ON PatientRoom.patientId = Admits.patientId;
-	
-	SELECT DISTINCT roomNumber, firstName, lastName, timeAdmitted, patientID
-	FROM ((PatientRoom join Admits using (patientID))
-			LEFT JOIN
-			(SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
-			FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
-			WHERE A.timeAdmitted > (select MAX (date)
-									from Discharges as C
-									where A.patientID = C.patientID)) USING (timeAdmitted, roomNumber, patientID));
-									
+	SELECT pr.roomNumber AS roomNumber, null, null, null, null
+	FROM PatientRoom pr
+	WHERE pr.roomNumber NOT IN (
+		SELECT roomNumber
+		FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+		WHERE A.timeAdmitted > (select MAX (date)
+								from Discharges as C
+								where A.patientID = C.patientID));
+								
 --B. Patient Information
 	--1)
 	-- List all patients in the database, with full personal information
@@ -156,19 +143,8 @@
 	
 	--10)
 	-- For each patient that has ever been admitted to the hospital, list their total number of admissions, average duration of each admission, longest span between admissions, shortest span between admissions, and average span between admissions.
-	SELECT p.patientId, COUNT(a.admissions), duration??, longest span??, shortest span??, AVG(a.span)
-	GROUP BY p.patientId
 	
-	--Avg duration of each admission
-	SELECT MAX(julianday(d.date) - julianday(a.timeAdmitted)) 
-	FROM Patient p 
-		JOIN Discharges d 
-			ON p.patientId = d.patientId
-		JOIN Admits a
-			ON p.patientId = a.patientId;
-			
-	--Longest span between admissions
-	SELECT 
+	
 		
 --C. Diagnosis and Treatment Information
 	--1)
@@ -309,11 +285,17 @@
 			WHERE vi.dayOfWeek = 'Tuesday' AND r.roomDescription = 'Info Desk';
 	
 	--3)
-	-- How to handle 'within one year time frame'
-	-- SELECT d.employeeId
-	-- FROM ?
-	-- GROUP BY p.patientId, a.date
-	-- HAVING 
+	-- List the primary doctor so patients with a high admission rate (at least 4 admissions within a one-year time frame).
+	SELECT patientID, COUNT(a.timeAdmitted)
+	FROM (Patient as p 
+		JOIN Admits as a
+			USING (patientId))
+	GROUP BY patientID
+	HAVING
+		(SELECT COUNT(a.timeAdmitted)
+		FROM Discharges d
+		WHERE a.patientId = d.patientId 
+		AND ((julianday(d.date) - julianday(a.timeAdmitted)) <= 365)) >= 4;
 	
 	--4)
 	-- For a given doctor, list all associated diagnoses in descending order of occurrence. For each diagnosis, list the total number of occurrences for the given doctor.
