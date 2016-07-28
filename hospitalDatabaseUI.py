@@ -63,12 +63,14 @@ def roomUtilization():
     num = raw_input('Enter a command: ')
     try:
       if (num == '1'):
-        for row in c.execute('''SELECT ra.roomNumber, p.firstName, p.lastName, a.date
-            FROM RoomAssignment ra 
-              JOIN Patient p 
-              ON ra.patientId = p.patientId
-              JOIN Admits a 
-              ON p.patientId = a.patientId;'''):
+        for row in c.execute(
+          '''SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
+             FROM (Admits as A join PatientRoom using (patientID)) join
+                Patient using (patientID)
+             WHERE A.timeAdmitted > (SELECT MAX (date)
+                                     FROM Discharges as C
+                                     WHERE A.patientID = C.patientID);
+          '''):
           print(row)
         
       elif (num == '2'):
