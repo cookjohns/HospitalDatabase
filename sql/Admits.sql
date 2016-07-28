@@ -3,6 +3,7 @@ drop table if exists Admits;
 CREATE TABLE Admits (
    employeeID integer,
    patientID integer,
+   diagnosisID integer,
    timeAdmitted datetime,
    PRIMARY KEY (patientID, employeeID),
    FOREIGN KEY (employeeID) REFERENCES Worker (employeeID),
