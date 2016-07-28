@@ -2,7 +2,7 @@ var _gen = require('./gen');
 var $output = {
    //for in patients
    name: 'Diagnoses',
-   depends: ['Admits'],
+   depends: ['Admits_temp'],
    elem: [],
    amount: 200,
    options:
@@ -12,12 +12,28 @@ var $output = {
       {
          name: 'doctorID',
          type: 'integer',
-         func: _gen.gen_fkey($tables, 'Admits', 'employeeID')
+		   func: function works4() {
+            works4.prototype.ids = (works4.prototype.ids ||
+                                   $tables.find((table) => {
+                                      return (table.name == 'Admits_temp');
+                                   }).elem.filter(()=>{return true;}));
+            return works4.prototype.ids.pop().find((attr) => {
+                  return attr.name == 'employeeID'
+               }).value;
+         }
       },
-      {
-         name: 'patientID',
-         type: 'integer',
-         func: _gen.gen_fkey($tables, 'Admits', 'patientID')
+      { // foreign key
+	      name: 'patientID',
+	      type: 'integer',
+         func: function works5() {
+            works5.prototype.ids = (works5.prototype.ids ||
+                                   $tables.find((table) => {
+                                      return (table.name == 'Admits_temp');
+                                   }).elem.filter(()=>{return true;}));
+            return works5.prototype.ids.pop().find((attr) => {
+                  return attr.name == 'patientID'
+               }).value;
+         }
       },
       {
          name: 'diagnosisID',

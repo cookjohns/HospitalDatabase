@@ -1,0 +1,26 @@
+var _gen = require('./gen');
+var $output = {
+   //temporary working file for generating diagnoses and admits data
+   name: 'Admits_temp',
+   depends: ['AdmittingDoctor', 'InPatient'],
+   elem: [],
+   amount: 200,
+   options:
+   [
+      { // foreign key
+         name: 'employeeID',
+         type: 'integer',
+		   func: _gen.gen_fkey($tables, 'AdmittingDoctor', 'employeeID')
+      },
+      { // foreign key
+	      name: 'patientID',
+	      type: 'integer',
+         func: _gen.gen_fkey($tables, 'InPatient', 'patientID')
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: []
+      }
+   ]
+}
