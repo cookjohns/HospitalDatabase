@@ -97,7 +97,7 @@ var gen_date = function(options)
       var start = (options.start || '');
       var end = (options.end || '');
       var receiver = (options.receiver || false);
-      var retry_count = 10000;
+      var retry_count = 100000;
 
       var input_start_date = new Date(start);
       var input_end_date = new Date(end);
@@ -182,14 +182,17 @@ var gen_date = function(options)
             var prev_end_date = undefined;
             for (var j = gen_date.prototype.ids.length; j > -1; j--) {
                      if (gen_date.prototype.ids[j]
-                         && gen_date.prototype.ids[j][ID_INDEX] == id)
+                         && gen_date.prototype.ids[j][ID_INDEX] == id) {
                         prev_end_date = gen_date.prototype.ids[j][END_DATE_INDEX];
+                        break;
+                     }
             }
             //generate date after prev_end_date
             if (prev_end_date) {
                while (i < retry_count) {
                   var start_date = rnd_date();
-                  if (start_date > prev_end_date) {
+                  //help from http://stackoverflow.com/questions/338463/how-do-i-do-a-date-comparison-in-javascript
+                  if (start_date.getTime() > prev_end_date.getTime()) {
                      break;
                   }
                   else i++;
@@ -206,7 +209,8 @@ var gen_date = function(options)
             i = 0
             while (i < retry_count) {
                var end_date = rnd_date();
-               if (end_date > (start_date))
+               //help from http://stackoverflow.com/questions/338463/how-do-i-do-a-date-comparison-in-javascript
+               if (end_date.getTime() > start_date.getTime())
                   break;
                else i++;
             }

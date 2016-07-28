@@ -1,0 +1,40 @@
+var _gen = require('./gen');
+var $output = {
+   //for out patients
+   //lower case for the purpose of
+   //printing the right name in sql (case-insensitive)
+   //but not interfering with inpatient which is used
+   //for admitting, etc.
+   name: 'diagnoses',
+   depends: ['Doctor', 'OutPatient'],
+   elem: [],
+   amount: 200,
+   options:
+   [
+      {
+         name: 'doctorID',
+         type: 'integer',
+         func: _gen.gen_fkey($tables, 'Doctor', 'employeeID')
+      },
+      {
+         name: 'patientID',
+         type: 'integer',
+         func: _gen.gen_fkey($tables, 'OutPatient', 'patientID')
+      },
+      {
+         name: 'diagnosisID',
+         type: 'integer',
+         func: _gen.gen_int(0, 10000)
+      },
+      {
+         name: 'name',
+         type: 'varchar(20)',
+         func: _gen.gen_def_from_words(100, 20)
+      },
+      {
+         name: 'post',
+         type: 'n\a',
+         func: [_gen.post_unique([['doctorID', 'patientID', 'diagnosisID']])]
+      }
+   ]
+}

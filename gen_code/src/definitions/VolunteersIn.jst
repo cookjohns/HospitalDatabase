@@ -1,0 +1,48 @@
+var _gen = require('./gen');
+var $output =	{
+	name: 'VolunteersIn',
+	depends: ['Volunteer', 'Room'],
+	elem: [],
+	amount: 200,
+	options:
+	[
+		{
+			name: 'employeeID',
+			type: 'integer',
+			func: _gen.gen_fkey($tables, 'Volunteer', 'employeeID')
+		},
+		{
+			name: 'roomNumber',
+			type: 'varchar(10)',
+			func: _gen.gen_fkey($tables, 'Room', 'roomNumber')
+		},
+		{
+			name: 'dayOfWeek',
+			type: 'varchar(10)',
+			func: () => {
+				var room = Math.floor(Math.random() * 10) % 7;
+				switch(room)	{
+					case 0:
+						return "Monday";
+					case 1:
+						return "Tuesday";
+					case 2:
+						return "Wednesday";
+					case 3:
+						return "Thursday";
+					case 4:
+						return "Friday";
+					case 5:
+						return "Saturday";
+					case 6:
+						return "Sunday";
+            }
+         }
+      },
+		{
+			name: 'post',
+			type: 'n\a',
+			func: [_gen.post_unique(['employeeID', 'roomNumber'])]
+		}
+	]
+}
