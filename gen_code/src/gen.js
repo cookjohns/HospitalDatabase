@@ -97,7 +97,7 @@ var gen_date = function(options)
       var start = (options.start || '');
       var end = (options.end || '');
       var receiver = (options.receiver || false);
-      var retry_count = 10000;
+      var retry_count = 100000;
 
       var input_start_date = new Date(start);
       var input_end_date = new Date(end);
