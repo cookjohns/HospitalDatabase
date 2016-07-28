@@ -38,17 +38,6 @@ var $output =	{
          }
 		},
 		{
-			name: 'volunteerRoom',
-			type: 'Boolean',
-			func: (_, $tuple) => {
-            if ($tuple.roomDescription == "Janitor Closet" ||
-                $tuple.roomDescription == "Cafeteria")
-               return 0;
-            else
-               return 1;
-         }
-		},
-		{
 			name: 'post',
 			type: 'n\a',
 			func: [_gen.post_unique(['roomNumber'])]
