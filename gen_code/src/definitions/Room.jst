@@ -20,7 +20,7 @@ var $output =	{
 			name: 'roomDescription',
 			type: 'varchar(10)',
 			func: () => {
-				var room = Math.floor(Math.random() * 10) % 4;
+				var room = Math.floor(Math.random() * 6);
 				switch(room)	{
 					case 0:
 						return "Info Desk";
@@ -30,20 +30,22 @@ var $output =	{
 						return "Janitor Closet";
 					case 3:
 						return "Cafeteria";
+               case 4:
+                  return "Snack Cart";
+               case 5:
+                  return "Reading Cart";
             }
          }
 		},
 		{
 			name: 'volunteerRoom',
 			type: 'Boolean',
-			func: () => {
-				var vol = Math.floor(Math.random() * 10) % 2;
-				switch(vol)	{
-					case 0:
-						return false;
-					case 1:
-						return true;
-            }
+			func: (_, $tuple) => {
+            if ($tuple.roomDescription == "Janitor Closet" ||
+                $tuple.roomDescription == "Cafeteria")
+               return 0;
+            else
+               return 1;
          }
 		},
 		{
