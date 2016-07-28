@@ -12,11 +12,6 @@ var $output =	{
 			func: _gen.gen_int(101, 150)
 		},
 		{
-			name: 'employeeID',
-			type: 'integer',
-			func: _gen.gen_fkey($tables, 'Worker', 'employeeID')
-		},
-		{
 			name: 'roomDescription',
 			type: 'varchar(10)',
 			func: () => {
