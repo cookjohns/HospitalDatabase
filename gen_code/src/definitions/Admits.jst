@@ -1,7 +1,7 @@
 var _gen = require('./gen');
 var $output = {
    name: 'Admits',
-   depends: ['AdmittingDoctor', 'InPatient'],
+   depends: ['Diagnoses', 'Admits_temp'],
    elem: [],
    amount: 200,
    options:
@@ -9,12 +9,53 @@ var $output = {
       { // foreign key
          name: 'employeeID',
          type: 'integer',
-		   func: _gen.gen_fkey($tables, 'AdmittingDoctor', 'employeeID')
+		   func: function works1() {
+            works1.prototype.ids = (works1.prototype.ids ||
+                                   $tables.find((table) => {
+                                      return (table.name == 'Admits_temp');
+                                   }).elem.filter(()=>{return true;}));
+            return works1.prototype.ids.pop().find((attr) => {
+                  return attr.name == 'employeeID'
+               }).value;
+         }
       },
       { // foreign key
 	      name: 'patientID',
 	      type: 'integer',
-         func: _gen.gen_fkey($tables, 'InPatient', 'patientID')
+         func: function works2() {
+            works2.prototype.ids = (works2.prototype.ids ||
+                                   $tables.find((table) => {
+                                      return (table.name == 'Admits_temp');
+                                   }).elem.filter(()=>{return true;}));
+            return works2.prototype.ids.pop().find((attr) => {
+                  return attr.name == 'patientID'
+               }).value;
+         }
+      },
+	   { // foreign key
+	      name: 'diagnosisID',
+	      type: 'integer',
+         func: function works3($table, $tuple) {
+            var thispid = $tuple.find((attr) => {
+               return attr.name == 'patientID';
+            }).value;
+            var thiseid = $tuple.find((attr) => {
+               return attr.name == 'employeeID';
+            }).value;
+            var eid = '';
+            var pid = '';
+            return $tables.find((table) => {
+               return (table.name == 'Diagnoses');
+            }).elem.find((tuple) => {
+               pid = tuple.find((attr) => {
+                  return attr.name == 'patientID';
+               }).value;
+               eid = tuple.find((attr) => {
+                  return attr.name == 'doctorID';
+               }).value;
+               return (thispid == pid && thiseid == eid);
+            }).find((attr) => {return attr.name == 'diagnosisID'}).value;
+         }
       },
       {
 	      name: 'timeAdmitted',
@@ -25,7 +66,7 @@ var $output = {
             pair: true,
             attr_name: 'patientID',
             start: '01-01-2014',
-            end: '01-12-2017'
+            end: '12-01-2017'
          })
       },
       {
