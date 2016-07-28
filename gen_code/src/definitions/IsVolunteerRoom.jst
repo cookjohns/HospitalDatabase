@@ -1,0 +1,24 @@
+var $output = {
+   name: 'IsVolunteerRoom',
+   depends: [],
+   elem: [],
+   amount: 4,
+   options:
+   [
+      {
+         name: 'roomDescription',
+         type: 'varchar(30)',
+         func: function roomDesc() {
+            roomDesc.prototype.order = (roomDesc.prototype.order ||
+                                        ['Info Desk', 'Snack Cart',
+                                         'Reading Cart', 'Gift Shop']);
+            return roomDesc.prototype.order.pop();
+         }
+      },
+      {
+         name: 'post',
+         type: 'n/a',
+         func: []
+      }
+   ]
+}
