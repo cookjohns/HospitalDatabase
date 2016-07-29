@@ -26,10 +26,8 @@
 	FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
 	WHERE A.timeAdmitted > (select MAX (date)
 							from Discharges as C
-							where A.patientID = C.patientID)
-							
+							where A.patientID = C.patientID)			
 	UNION
-	
 	SELECT pr.roomNumber AS roomNumber, null, null, null, null
 	FROM PatientRoom pr
 	WHERE pr.roomNumber NOT IN (
@@ -138,13 +136,43 @@
 	ORDER BY a.timeAdmitted DESC;
 	
 	--9)
-	-- UPDATE tablename SET creationDate=DATETIME(creationDate, '+330 minutes');
-	-- NO IDEA
+	-- List patients who were admitted to the hospital within 30 days of their last discharge date. For each patient list their patient identiﬁcation number, name, diagnosis, and admitting doctor
+	
+	SELECT K.patientID as patientID, firstName || ' ' || lastName as name, name as diagnosis, employeeID as doctorID
+	FROM 
+	((SELECT roomNumber, firstName, lastName, timeAdmitted, patientID, employeeID, diagnosisId
+	FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+	WHERE A.timeAdmitted > (select MAX (date)
+							from Discharges as C
+							where A.patientID = C.patientID)) as K join
+	 Discharges as D on (D.patientID = K.patientID)) join Diagnoses using (diagnosisId)
+	GROUP BY K.patientID
+	HAVING (MAX(timeAdmitted) - MAX(date)) <= 30;
 	
 	--10)
 	-- For each patient that has ever been admitted to the hospital, list their total number of admissions, average duration of each admission, longest span between admissions, shortest span between admissions, and average span between admissions.
 	
-	
+	SELECT V.patientID, V.NumAdmissions, V.AVGDuration, T.MaxSpan, T.MinSpan, T.AVGSpan
+	FROM (SELECT A.patientID,
+		MAX (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) MaxSpan,
+		MIN (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) MinSpan,
+		AVG (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) AVGSpan
+		FROM ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as A
+		WHERE (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) IN
+		(select JULIANDAY(B.timeAdmitted) - JULIANDAY(B.date)
+		 from ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as B
+		 where A.patientID = B.patientID
+		 and (JULIANDAY(B.timeAdmitted) - JULIANDAY(A.date)) > 0)
+		GROUP BY A.patientID) as T,
+		(SELECT patientID,
+		COUNT (A.timeAdmitted) as NumAdmissions,
+		AVG (JULIANDAY(A.date) - JULIANDAY(A.timeAdmitted)) as AVGDuration
+		FROM ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as A
+		GROUP BY A.patientID) as V
+	WHERE T.patientID = V.patientID;
 		
 --C. Diagnosis and Treatment Information
 	--1)
@@ -286,16 +314,19 @@
 	
 	--3)
 	-- List the primary doctor so patients with a high admission rate (at least 4 admissions within a one-year time frame).
-	SELECT patientID, COUNT(a.timeAdmitted)
+	SELECT d.employeeId
 	FROM (Patient as p 
 		JOIN Admits as a
 			USING (patientId))
+		JOIN Doctor d 
+			ON d.employeeId = a.employeeId
 	GROUP BY patientID
 	HAVING
 		(SELECT COUNT(a.timeAdmitted)
 		FROM Discharges d
 		WHERE a.patientId = d.patientId 
-		AND ((julianday(d.date) - julianday(a.timeAdmitted)) <= 365)) >= 4;
+		AND ((julianday(d.date) - julianday(a.timeAdmitted)) <= 365)) >= 4
+	ORDER BY d.employeeId;
 	
 	--4)
 	-- For a given doctor, list all associated diagnoses in descending order of occurrence. For each diagnosis, list the total number of occurrences for the given doctor.
