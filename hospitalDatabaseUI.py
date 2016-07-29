@@ -69,12 +69,13 @@ def roomUtilization():
 
     if (num == '1'):
       try:
+        print('RoomNumber, FirstName, LastName, TimeAdmitted, PatientID')
         for row in c.execute('''SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
-             FROM (Admits as A join PatientRoom using (patientID)) join
-                Patient using (patientID)
-             WHERE A.timeAdmitted > (SELECT MAX (date)
-                                     FROM Discharges as C
-                                     WHERE A.patientID = C.patientID);
+            FROM (Admits as A join PatientRoom using (patientID)) join
+              Patient using (patientID)
+                WHERE A.timeAdmitted > (SELECT MAX (date)
+              FROM Discharges as C
+              WHERE A.patientID = C.patientID);
           '''):
           print(row)
       except sqlite3.OperationalError as err1:
@@ -85,9 +86,15 @@ def roomUtilization():
         
     elif (num == '2'):
       try:
-        for row in c.execute('''SELECT pr.roomNumber 
-           FROM PatientRoom pr LEFT JOIN RoomAssignment ra ON pr.roomNumber = ra.roomNumber
-           WHERE ra.patientId IS NULL;'''):
+        print('RoomNumber')
+        for row in c.execute('''SELECT pr.roomNumber AS roomNumber
+          FROM PatientRoom pr
+          WHERE pr.roomNumber NOT IN (
+	  SELECT roomNumber
+	  FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+	  WHERE A.timeAdmitted > (select MAX (date)
+	  FROM Discharges as C
+	  WHERE A.patientID = C.patientID));'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in roomUtilization 2:")
@@ -97,14 +104,21 @@ def roomUtilization():
         
     elif (num == '3'):
       try:
-        for row in c.execute('''SELECT pr.roomNumber, p.firstName, p.lastName, a.admittedDate
+        print('RoomNumber, FirstName, LastName, TimeAdmitted, PatientID')
+        for row in c.execute('''SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
+          FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+          WHERE A.timeAdmitted > (select MAX (date)
+            FROM Discharges AS C
+	    WHERE A.patientID = C.patientID)
+	    UNION
+          SELECT pr.roomNumber AS roomNumber, null, null, null, null
           FROM PatientRoom pr
-            LEFT JOIN RoomAssignment ra 
-            ON pr.roomNumber = ra.roomNumber
-            JOIN Patient p 
-            ON ra.patientId = p.patientId
-            JOIN Admits a 
-            ON p.patientId = a.patientId;'''):
+          WHERE pr.roomNumber NOT IN (
+            SELECT roomNumber
+	    FROM (Admits AS A JOIN PatientRoom USING (patientID)) JOIN Patient USING (patientID)
+	    WHERE A.timeAdmitted > (SELECT MAX (date)
+	    FROM Discharges AS C
+	    WHERE A.patientID = C.patientID));'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in roomUtilization 3:")
@@ -134,14 +148,15 @@ def patientInformation():
     print('\t6.  All Patients Receiving Outpatient Services in a Given Date Range') 
     print('\t7.  All Admission and Diagnoses for a Given Patient') 
     print('\t8.  All Treaments Administered to a Given Patient') 
-    print('\t9.  All Patients Readmitted Within 30 Days of Their '  #\nNYI
+    print('\t9.  All Patients Readmitted Within 30 Days of Their '  
            'Last Discharge Date')
-    print('\t10. Patient Statistics') #\nNYI
+    print('\t10. Patient Statistics')
   
     num = raw_input('Enter a command: ')
     
     if (num == '1'):
-      try:    
+      try:
+        print('PatientID, FirstName, LastName, InsurancePolicy, EmergencyContact')
         for row in c.execute('''SELECT *
           FROM Patient;'''):
           print(row)
@@ -153,15 +168,14 @@ def patientInformation():
         
     elif (num == '2'):
       try:
-        for row in c.execute('''SELECT patientId, firstName, lastName
-          FROM (
-            SELECT p.patientId, d.date
-            FROM Patient p JOIN Discharges d ON p.patientId = d.patientId) DischargeDates
-              LEFT JOIN (
+        print('PatientID, FirstName, LastName')
+        for row in c.execute('''SELECT currentPatients.patientId AS patientID, currentPatients.firstName, currentPatients.lastName
+          FROM InPatient ip
+            JOIN(
                 SELECT p.patientId, p.firstName, p.lastName
-                FROM Patient p JOIN InPatients ip ON p.patientId = ip.patientId) InPatientNames
-              ON DischargeDates.patientId = InPatientNames.patientId
-              WHERE date IS NULL;'''):
+                FROM Patient p LEFT JOIN Discharges d ON p.patientId = d.patientId WHERE d.date IS NULL)
+                currentPatients
+              ON ip.patientId = currentPatients.patientId;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 2:")
@@ -174,12 +188,11 @@ def patientInformation():
       dates[0] = raw_input('Enter a startDate: ')
       dates[1] = raw_input('Enter an endDate: ')
       try:
+        print('PatientID, FirstName, LastName')
         for row in c.execute('''SELECT p.patientId, p.firstName, p.lastName
           FROM Patient p 
-            JOIN InPatient ip 
-            ON p.patientId = ip.patientId
-            JOIN Administers a
-            ON ip.patientId = a.patientId
+            JOIN InPatient ip ON p.patientId = ip.patientId
+            JOIN Administers a ON ip.patientId = a.patientId
           WHERE a.timeAdministered < ?
           AND a.timeAdministered > ?;''', dates):
           print(row)
@@ -197,6 +210,7 @@ def patientInformation():
       dates[0] = raw_input('Enter a startDate: ')
       dates[1] = raw_input('Enter an endDate: ')
       try:
+        print('PatientID, FirstName, LastName')
         for row in c.execute('''SELECT p.patientId, p.firstName, p.lastName
           FROM Patient p JOIN Discharges d ON p.patientId = d.patientId
           WHERE d.date > ?
@@ -213,15 +227,14 @@ def patientInformation():
         
     elif (num == '5'):
       try:
-        for row in c.execute(''''SELECT patientId, firstName, lastName
-           FROM (
-                  SELECT p.patientId, d.date
-                  FROM Patient p JOIN Discharges d ON p.patientId = d.patientId) DischargeDates
-                  LEFT JOIN ( 
-                  SELECT p.patientId, p.firstName, p.lastName
-                  FROM Patient p JOIN OutPatients op ON p.patientId = op.patientId) InPatientNames
-                  ON DischargeDates.patientId = InPatientNames.patientId
-           WHERE date IS NULL;'''):
+        print('PatientID, FirstName, LastName')
+        for row in c.execute('''SELECT currentPatients.patientId AS patientID,
+          currentPatients.firstName || \' \' || currentPatients.lastName AS patientName
+          FROM OutPatient op
+            JOIN (
+              SELECT p.patientId, p.firstName, p.lastName
+              FROM Patient p LEFT JOIN Discharges d ON p.patientId = d.patientId WHERE d.date IS NULL) currentPatients
+            ON op.patientId = currentPatients.patientId;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 5:")
@@ -234,12 +247,14 @@ def patientInformation():
       dates[0] = raw_input('Enter a startDate: ')
       dates[1] = raw_input('Enter an endDate: ')
       try:
-        for row in c.execute('''SELECT p.patientId, p.firstName, p.lastName
-           FROM Admits a JOIN (
-                  SELECT p.patientId, p.firstName, p.lastName
-                  FROM Patient p JOIN OutPatients op ON p.patientId = op.patientId) OutPatientNames
-           WHERE a.date > ?
-           AND a.date < ?;''', dates):
+        print('PatientID, FirstName, LastName')
+        for row in c.execute('''SELECT DISTINCT(OutPatientNames.patientId) AS patientId, 
+          OutPatientNames.firstName || ' ' || OutPatientNames.lastName AS patientName
+          FROM Admits a JOIN (
+            SELECT p.patientId, p.firstName, p.lastName
+            FROM Patient p JOIN OutPatient op ON p.patientId = op.patientId) OutPatientNames
+          WHERE a.timeAdmitted > ?
+          AND a.timeAdmitted < ?;''', dates):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 6:")
@@ -251,15 +266,14 @@ def patientInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
       
     elif (num == '7'):
-      requestedPatient = raw_input('Enter a patient\'s name: ')
+      requestedPatient = raw_input('Enter a patient\'s ID:')
       try:
-        for row in c.execute('''SELECT a.date, d.diagnosis
-           FROM Diagnoses d
-                  JOIN Admits a
-                          ON d.diagnosesId = a.diagnosesId
-                  LEFT JOIN Patient p 
-                          ON a.patientId = p.patientId
-           WHERE p.patientId = ?;''', requestedPatient):
+        print('TimeAdmitted, DIagnosisID, DiagnosisName')
+        for row in c.execute('''SELECT a.timeAdmitted AS admission, d.diagnosisId, d.name AS diagnosisName
+          FROM Diagnoses d
+            JOIN Admits a ON d.diagnosisId = a.diagnosisId
+	    LEFT JOIN Patient p ON a.patientId = p.patientId
+          WHERE p.patientId = ?;''', (requestedPatient,)):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 7:")
@@ -268,19 +282,23 @@ def patientInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '8'):
-      requestedPatient = raw_input('Enter a patient\'s name: ')
+      requestedPatient = raw_input('Enter a patient\'s ID:')
       try:
-        for row in c.execute('''SELECT admit.date, t.treatmentId
-           FROM InPatient ip
-                  JOIN Administers admin
-                          ON ip.patientId = admin.patientId
-                  JOIN Treatment t
-                          ON a.treatmentId = t.treatmentId
-                  JOIN Admits admit
-                          ON admit.patientId = ip.patientId
-           WHERE ip.patientId = ?
-           GROUP BY admit.date
-           ORDER BY admit.date DESC, admin.timeAdministered ASC;''', requestedPatient):
+        print('TreatmentID, TreatmentName')
+        for row in c.execute('''SELECT patientTreatments.treatmentId AS treatmentId, patientTreatments.name AS name
+          FROM Admits a 
+          JOIN (
+            SELECT t.treatmentId, t.name, treatedPatients.patientId
+              FROM Treatment t 
+		JOIN (
+                  SELECT p.patientId, a.treatmentId
+                  FROM Patient p JOIN Administers a ON p.patientId = a.patientId
+                    ORDER BY a.timeAdministered ASC) treatedPatients
+                  ON t.treatmentId = treatedPatients.treatmentId
+                  WHERE treatedPatients.patientId = ?) patientTreatments
+          ON patientTreatments.patientId = a.patientId
+          GROUP BY a.timeAdmitted
+          ORDER BY a.timeAdmitted DESC;''', (requestedPatient,)):
             print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 8:")
@@ -289,9 +307,19 @@ def patientInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '9'):
-      print('\nNYI')
       try:
-        c.execute('')
+        print('PatientID, FirstName, LastName, Diagnosis, DoctorID')
+        for row in c.execute('''SELECT K.patientID as patientID, firstName || ' ' || lastName as name, name as diagnosis, employeeID as doctorID
+          FROM 
+          ((SELECT roomNumber, firstName, lastName, timeAdmitted, patientID, employeeID, diagnosisId
+          FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+          WHERE A.timeAdmitted > (select MAX (date)
+          from Discharges as C
+          where A.patientID = C.patientID)) as K join
+          Discharges as D on (D.patientID = K.patientID)) join Diagnoses using (diagnosisId)
+          GROUP BY K.patientID
+          HAVING (MAX(timeAdmitted) - MAX(date)) <= 30;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 9:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -299,9 +327,30 @@ def patientInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
 
     elif (num == '10'):
-      print('\nNYI')
       try:
-        c.execute('')
+        print('PatientID, NumAdmissions, AVGDuration, MaxSpan, MinSpan, AVGSpan')
+        for row in c.execute('''SELECT V.patientID, V.NumAdmissions, V.AVGDuration, T.MaxSpan, T.MinSpan, T.AVGSpan
+	FROM (SELECT A.patientID,
+		MAX (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) MaxSpan,
+		MIN (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) MinSpan,
+		AVG (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) AVGSpan
+		FROM ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as A
+		WHERE (JULIANDAY(A.timeAdmitted) - JULIANDAY(A.date)) IN
+		(select JULIANDAY(B.timeAdmitted) - JULIANDAY(B.date)
+		 from ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as B
+		 where A.patientID = B.patientID
+		 and (JULIANDAY(B.timeAdmitted) - JULIANDAY(A.date)) > 0)
+		GROUP BY A.patientID) as T,
+		(SELECT patientID,
+		COUNT (A.timeAdmitted) as NumAdmissions,
+		AVG (JULIANDAY(A.date) - JULIANDAY(A.timeAdmitted)) as AVGDuration
+		FROM ((Patient join Admits using (patientID)) 
+			join Discharges using (patientID)) as A
+		GROUP BY A.patientID) as V
+	WHERE T.patientID = V.patientID;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 10:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -325,27 +374,25 @@ def diagnosisAndTreatmentInformation():
     print('\t1.  Diagnoses Given to Admitted Patients')
     print('\t2.  Diagnoses Given to Outpatients')
     print('\t3.  Diagnoses Given to All Patients')
-    print('\t4.  Treatments Performed at the Hospital') #\nNYI
+    print('\t4.  Treatments Performed at the Hospital') 
     print('\t5.  Treatments Performed on Admitted Patients')
-    print('\t6.  Treatments Performed on Outpatients') #\nNYI
-    print('\t7.  Diagnoses Associated with Patients with Highest Occurrences of ' #\nNYI
+    print('\t6.  Treatments Performed on Outpatients') 
+    print('\t7.  Diagnoses Associated with Patients with Highest Occurrences of ' 
            + 'Addmissions')
-    print('\t8.  Employees Involved in a Given Treatment Occurance') ##\nNYI
+    print('\t8.  Employees Involved in a Given Treatment Occurance')
     
     num = raw_input('Enter a command: ')
 
     if (num == '1'):
       try:
-        for row in c.execute('''SELECT d.diagnosisId, d.name, COUNT(DISTINCT d.diagnosesId)
-           FROM InPatient ip 
-                  JOIN Patient p
-                          ON ip.patientId = p.patientId
-                  JOIN Admits a
-                          ON p.patientId = a.patientId
-                  JOIN Diagnoses d
-                          ON a.diagnosisId = d.diagnosisId
-           GROUP BY d.diagnosisId
-           ORDER BY a.date DESC;'''):
+        print('DiagnosisID, DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT d.diagnosisId, d.name AS diagnosisName, COUNT(d.diagnosisId) totalOccurences
+          FROM InPatient ip 
+            JOIN Patient p ON ip.patientId = p.patientId
+	    JOIN Admits a ON p.patientId = a.patientId
+	    JOIN Diagnoses d ON a.diagnosisId = d.diagnosisId
+          GROUP BY d.diagnosisId
+          ORDER BY COUNT(d.diagnosisId) DESC;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 1:")
@@ -355,16 +402,14 @@ def diagnosisAndTreatmentInformation():
         
     elif (num == '2'):
       try:
-        for row in c.execute('''SELECT d.diagnosisId, d.name, COUNT(DISTINCT d.diagnosesId)
-           FROM OutPatient op 
-                  JOIN Patient p
-                          ON op.patientId = p.patientId
-                  JOIN Admits a
-                          ON p.patientId = a.patientId
-                  JOIN Diagnoses d
-                          ON a.diagnosisId = d.diagnosisId
-           GROUP BY d.diagnosisId
-           ORDER BY a.date DESC;'''):
+        print('DiagnosisID, DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT d.diagnosisId, d.name AS diagnosisName, COUNT(d.diagnosisId) totalOccurences
+          FROM OutPatient op 
+            JOIN Patient p ON op.patientId = p.patientId
+            JOIN Admits a ON p.patientId = a.patientId
+            JOIN Diagnoses d ON a.diagnosisId = d.diagnosisId
+          GROUP BY d.diagnosisId
+          ORDER BY COUNT(d.diagnosisId) DESC;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 2:")
@@ -374,14 +419,13 @@ def diagnosisAndTreatmentInformation():
         
     elif (num == '3'):
       try:
-        for row in c.execute('''SELECT d.diagnosisId, d.name, COUNT(DISTINCT d.diagnosesId)
+        print('DiagnosisID, Name, TotalOccurences')
+        for row in c.execute('''SELECT d.diagnosisId, d.name, COUNT(DISTINCT d.diagnosisId)
           FROM Patient p
-            JOIN Admits a
-              ON p.patientId = a.patientId
-            JOIN Diagnoses d
-              ON a.diagnosisId = d.diagnosisId
+            JOIN Admits a ON p.patientId = a.patientId
+            JOIN Diagnoses d ON a.diagnosisId = d.diagnosisId
           GROUP BY d.diagnosisId
-          ORDER BY a.date DESC;'''):
+          ORDER BY a.timeAdmitted DESC;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 3:")
@@ -390,9 +434,13 @@ def diagnosisAndTreatmentInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
 
     elif (num == '4'):
-      print('\nNYI')
       try:
-        c.execute('')
+        print('TreatmentID, DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT t.treatmentId, t.name AS diagnosisName, COUNT(a.timeAdministered) totalOccurences
+          FROM Treatment t JOIN Administers a ON t.treatmentId = a.treatmentId
+          GROUP BY t.treatmentId
+          ORDER BY COUNT(a.timeAdministered) DESC;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 4:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -401,10 +449,14 @@ def diagnosisAndTreatmentInformation():
         
     elif (num == '5'):
       try:
+        print('TreatmentID, DiagnosisName, TotalOccurences')
         for row in c.execute('''SELECT t.treatmentId, t.name, COUNT(DISTINCT t.treatmentId)
-          FROM 
+          FROM Administers a JOIN Treatment t ON a.treatmentId = t.treatmentId
+          WHERE a.patientId IN (
+            SELECT patientId 
+            FROM InPatient)
           GROUP BY t.treatmentId
-          ORDER BY a.timeAdministered;'''):
+          ORDER BY a.timeAdministered DESC;'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 5:")
@@ -413,9 +465,15 @@ def diagnosisAndTreatmentInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '6'):
-      print('\nNYI')
       try:
-        c.execute('')
+        print('TreatmentID, DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT t.treatmentId, t.name, COUNT(DISTINCT t.treatmentId)
+          FROM Administers a JOIN Treatment t ON a.treatmentId = t.treatmentId
+          WHERE a.patientId IN ( SELECT patientId 
+            FROM OutPatient)
+          GROUP BY t.treatmentId
+          ORDER BY a.timeAdministered DESC;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 6:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -423,9 +481,20 @@ def diagnosisAndTreatmentInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '7'):
-      print('\nNYI')
       try:
-        c.execute('')
+        print('PatientID, DiagnosisID, DiagnosisName')
+        for row in c.execute('''SELECT p.patientId, d.diagnosisId, d.name 
+          FROM Diagnoses d 
+            JOIN Patient p ON d.patientId = p.patientId
+	    JOIN Admits a ON p.patientId = a.patientId
+          GROUP BY p.patientId
+          HAVING COUNT(a.timeAdmitted) = (SELECT MAX(numAdmissions)
+	    FROM (
+              SELECT COUNT(timeAdmitted) numAdmissions
+              FROM Admits
+	    GROUP BY patientId))
+          ORDER BY a.timeAdmitted DESC;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 7:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -433,9 +502,22 @@ def diagnosisAndTreatmentInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '8'):
-      print('\nNYI')
+      requests = ['', '']
+      requests[0] = raw_input('Enter a requestedTreatment ID: ')
+      requests[1] = raw_input('Enter a requestedPatient ID: ')
       try:
-        c.execute('')
+        print('TreatmentGiverID, Firstname, LastName, DoctorID')
+        for row in c.execute('''SELECT tg.treatmentGiverId, 
+          p.firstName || ' ' || p.lastName AS patientName,
+          d.employeeId AS doctorID
+          FROM Treatment t
+            JOIN Administers a ON t.treatmentId = a.treatmentId
+	    JOIN TreatmentGiver tg ON a.treatmentGiverId = tg.treatmentGiverId
+	    JOIN Doctor d ON tg.treatmentGiverId = d.treatmentGiverId
+	    JOIN Patient p ON a.patientId = p.patientId
+          WHERE t.treatmentId = ?
+          AND p.patientId = ?;''', requests):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in diagnosisAndTreatment 8:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -458,35 +540,36 @@ def employeeInformation():
     print('\n\nEnter a command or type \'back\'')
     print('\t1.  All Workers')
     print('\t2.  All Volunteers at the Information Desk on Tuesdays')
-    print('\t3.  Primary Doctors of Patients with High Admission Rates') #\nNYI
+    print('\t3.  Primary Doctors of Patients with High Admission Rates') 
     print('\t4.  All Diagnoses Given by a Specified Doctor') 
-    print('\t5.  All Treatments Ordered by a Given Doctor') ##\nNYI
+    print('\t5.  All Treatments Ordered by a Given Doctor')
     print('\t6.  All Treatments in Which a Given Doctor Participated') 
-    print('\t7.  Employees Involved in Any Treatment')
+    print('\t7.  Employees Involved in Every Treatment')
     
     num = raw_input('Enter a command: ')
     
     if (num == '1'):
       try:
+        print('EmployeeID, FirstName, LastName, Category, HireDate')
         for row in c.execute('''SELECT employeeId, firstName, lastName, category, hireDate
           FROM (
-                  SELECT w.employeeId, w.firstName, w.lastName, \'Technician\' AS category, w.hireDate
-                  FROM Worker w JOIN Technician t ON w.employeeId = t.employeeId
-                  UNION
-                  SELECT w.employeeId, w.firstName, w.lastName, \'Nurse\' AS category, w.hireDate
-                  FROM Worker w JOIN Nurse n ON w.employeeId = n.employeeId
-                  UNION
-                  SELECT w.employeeId, w.firstName, w.lastName, \'Doctor\' AS category, w.hireDate
-                  FROM Worker w JOIN Doctor d ON w.employeeId = d.employeeId
-                  UNION
-                  SELECT w.employeeId, w.firstName, w.lastName, \'Admin\' AS category, w.hireDate
-                  FROM Worker w JOIN Admin a ON w.employeeId = a.employeeId
-                  UNION
-                  SELECT w.employeeId, w.firstName, w.lastName, \'Staff\' AS category, w.hireDate
-                  FROM Worker w JOIN Staff s ON w.employeeId = s.employeeId
-                  UNION
-                  SELECT w.employeeId, w.firstName, w.lastName,\'Volunteer\' AS category, w.hireDate
-                  FROM Worker w JOIN Volunteer v ON w.employeeId = v.employeeId) employeeData
+            SELECT w.employeeId, w.firstName, w.lastName, 'Technician' AS category, w.hireDate
+            FROM Worker w JOIN Technician t ON w.employeeId = t.employeeId
+            UNION
+            SELECT w.employeeId, w.firstName, w.lastName, 'Nurse' AS category, w.hireDate
+            FROM Worker w JOIN Nurse n ON w.employeeId = n.employeeId
+            UNION
+            SELECT w.employeeId, w.firstName, w.lastName, 'Doctor' AS category, w.hireDate
+            FROM Worker w JOIN Doctor d ON w.employeeId = d.employeeId
+            UNION
+            SELECT w.employeeId, w.firstName, w.lastName, 'Admin' AS category, w.hireDate
+            FROM Worker w JOIN Admin a ON w.employeeId = a.employeeId
+            UNION
+            SELECT w.employeeId, w.firstName, w.lastName, 'Staff' AS category, w.hireDate
+            FROM Worker w JOIN Staff s ON w.employeeId = s.employeeId
+            UNION
+            SELECT w.employeeId, w.firstName, w.lastName,'Volunteer' AS category, w.hireDate
+            FROM Worker w JOIN Volunteer v ON w.employeeId = v.employeeId) employeeData
           ORDER BY lastName ASC, firstName ASC;'''):
           print(row)
       except sqlite3.OperationalError as err1:
@@ -497,15 +580,11 @@ def employeeInformation():
         
     elif (num == '2'):
       try:
-        for row in c.execute('''SELECT v.employeeId
-           FROM Volunteer v
-                  JOIN VolunteersIn vi
-                          ON v.employeeId = vi.employeeId
-                  JOIN VolunteerRoom vr
-                          ON vi.roomId = vr.roomId
-                  JOIN InfoDesk id
-                          ON vr.roomId = id.roomId
-          WHERE vi.dayOfWeek = \'Tuesday\';'''):
+        print('EmployeeID')
+        for row in c.execute('''SELECT vi.employeeId
+          FROM VolunteersIn vi
+            JOIN Room r	ON vi.roomNumber = r.roomNumber
+	    WHERE vi.dayOfWeek = 'Tuesday' AND r.roomDescription = 'Info Desk';'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in employeeInformation 2:")
@@ -514,9 +593,22 @@ def employeeInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '3'):
-      print('\nNYI')
-      try:  
-        c.execute('')
+      try:
+        print('EmployeeID')
+        for row in c.execute('''SELECT d.employeeId
+	FROM (Patient as p 
+		JOIN Admits as a
+			USING (patientId))
+		JOIN Doctor d 
+			ON d.employeeId = a.employeeId
+	GROUP BY patientID
+	HAVING
+		(SELECT COUNT(a.timeAdmitted)
+		FROM Discharges d
+		WHERE a.patientId = d.patientId 
+		AND ((julianday(d.date) - julianday(a.timeAdmitted)) <= 365)) >= 4
+	ORDER BY d.employeeId;'''):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in employeeInformation 3:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -524,24 +616,32 @@ def employeeInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '4'):
-      requestedDoctor = raw_input('Enter a doctor\'s name: ')
+      requestedDoctor = raw_input('Enter a doctor\'s employeeID: ')
       try:
-        for row in c.execute('''SELECT d.diagnosis, COUNT(d.diagnosis) totalOccurences
-          FROM Doctor doc JOIN Diagnoses d ON doc.employeeId = d.employeeId
+        print('DiagnosisID, DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT d.diagnosisId, d.name AS diagnosisName, COUNT(d.diagnosisId) totalOccurences
+          FROM Doctor doc JOIN Diagnoses d on doc.employeeId = d.doctorId
           WHERE doc.employeeId = ?
-          GROUP BY d.diagnosis
-          ORDER BY d.date DESC;''', requestedDoctor):
+          GROUP BY d.diagnosisId
+          ORDER BY COUNT(d.diagnosisId) DESC;''', (requestedDoctor,)):
           print(row)
-      except sqlite3.OperationalError as err1:
+      except sqlite3.OperationalError as err1:  
         print("\nSomething went wrong in employeeInformation 4:")
         print("sqlite3.OperationalError: {0}".format(err1))
       except:
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '5'):
-      print('\nNYI')
+      requestedDoctor = raw_input('Enter a doctor\'s employeeID: ')
       try:
-        c.execute('')
+        print('DiagnosisName, TotalOccurences')
+        for row in c.execute('''SELECT name, COUNT(*)
+          FROM Doctor join Administers using (treatmentGiverID) join Treatment
+          using (treatmentId)
+          WHERE employeeID = ?
+          GROUP BY name
+          ORDER BY COUNT(*) DESC;''', requestedDoctor):
+          print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in employeeInformation 5:")
         print("sqlite3.OperationalError: {0}".format(err1))
@@ -549,19 +649,17 @@ def employeeInformation():
         print("\nUnexpected Error: ", sys.exc_info()[0])
         
     elif (num == '6'):
-      requestedDoctor = raw_input('Enter a doctor\'s name: ')
+      requestedDoctor = raw_input('Enter a doctor\'s employeeId: ')
       try:
+        print('TreatmentID, TotalAdministered')
         for row in c.execute('''SELECT t.treatmentId, COUNT(t.treatmentId) as totalAdministered
           FROM Doctor doc
-                  JOIN TreatmentGiver tg
-                          ON doc.employeeId = tg.employeeId
-                  JOIN Administers a
-                          ON tg.employeeId = a.employeeId
-                  JOIN Treatment t
-                          ON a.treatmentId = treatmentId
+            JOIN TreatmentGiver tg ON doc.treatmentGiverID = tg.treatmentGiverID
+	    JOIN Administers a ON tg.treatmentGiverID = a.treatmentGiverID
+	    JOIN Treatment t ON a.treatmentId = t.treatmentId
           WHERE doc.employeeId = ?
           GROUP BY t.treatmentId
-          ORDER BY a.timeAdministered DESC;''', requestedDoctor):
+          ORDER BY a.timeAdministered DESC;''', (requestedDoctor,)):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in employeeInformation 6:")
@@ -571,12 +669,13 @@ def employeeInformation():
         
     elif (num == '7'):
       try:
-        for row in c.execute('''SELECT tg.employeeId
-          FROM TreatmentGiver tg JOIN Administers a ON tg.employeeId = a.employeeId
-          GROUP BY tg.employeeId
+        print('TreatmentGiverID')
+        for row in c.execute('''SELECT IFNULL(tg.treatmentGiverID, "No employee has treated all patients.")
+          FROM TreatmentGiver tg JOIN Administers a ON tg.treatmentGiverID = a.treatmentGiverID
+          GROUP BY tg.treatmentGiverID
           HAVING COUNT(DISTINCT a.patientId) = (
-                  SELECT COUNT(DISTINCT p.patientId)
-                  FROM Administers a);'''):
+            SELECT COUNT(DISTINCT a.patientId)
+            FROM Administers a);'''):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in employeeInformation 7:")
