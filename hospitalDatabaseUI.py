@@ -193,8 +193,8 @@ def patientInformation():
           FROM Patient p 
             JOIN InPatient ip ON p.patientId = ip.patientId
             JOIN Administers a ON ip.patientId = a.patientId
-          WHERE a.timeAdministered < ?
-          AND a.timeAdministered > ?;''', dates):
+          WHERE a.timeAdministered > ?
+          AND a.timeAdministered < ?;''', dates):
           print(row)
       except sqlite3.OperationalError as err1:
         print("\nSomething went wrong in patientInformation 3:")
