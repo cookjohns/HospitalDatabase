@@ -155,10 +155,20 @@
 	--9)
 	-- UPDATE tablename SET creationDate=DATETIME(creationDate, '+330 minutes');
 	-- NO IDEA
-	
+
+   SELECT roomNumber, firstName, lastName, timeAdmitted, patientID
+   FROM (Admits as A join PatientRoom using (patientID)) join Patient using (patientID)
+   WHERE A.timeAdmitted > (select MAX (date)
+      			   from Discharges as C
+			   where A.patientID = C.patientID)
+   AND ((select MAX (date)
+      			   from Discharges as C
+			   where A.patientID = C.patientID)
+	 - A.timeAdmitted) > 30;
+
 	--10)
 	-- NOT RIGHT NOW
-	
+
 	
 --C. Diagnosis and Treatment Information
 	--1)
@@ -268,6 +278,12 @@
 	-- NOTE: requestedDoctor is a parameter provided by user
 	-- FROM Doctor doc, Orders o, -- how do I do this with an aggregate?
 	
+   SELECT name, COUNT(*) 
+   FROM Doctor join Administers using (treatmentGiverID) join Treatment
+      using (treatmentId)
+   WHERE employeeID = ?
+   GROUP BY name
+   ORDER BY COUNT(*) DESC;
 	
 	--6)
 	-- For a given doctor, list all treatments in which they participated, in descending order of occurrence. For each treatment, list the total number of occurrences for the given doctor.
