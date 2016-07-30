@@ -1,11 +1,11 @@
 # HospitalDatabase
 
-Database project for Auburn's COMP 5120 course
+This database, written for SQLite with a Python interface, was designed and built to store the operation information of a hospital, excluding all payroll and billing information.
 
-Please branch before making changes. It would be great if we could keep all code change discussion contained within github's pull request messaging system. 
+### To run:
+`sh init_db.sh` to create the database and populate the information, then
+`python hospitalDatabaseUI.py` to start the user interface
 
-If you don't know how all of this works, it's really easy. Without going into detailed instructions, just branch the repo, make your changes to your branch, then when you're ready submit a pull request. That will allow us to see and discuss the proposed changes, and merge them into the master branch when we're all good.
-
-Committing to your branch often is good. If you added something and it still passes your tests, commit. If you added something and it doesn't break anything else, commit. More of a reminder for myself than anything.
-
-If you want to try things out, feel free to branch, edit this file, commit, then submit a pull request.
+### Entity-Relation Diagram
+The diagram below reprents the entity relations of the database:
+![ERD] (https://drive.google.com/uc?id=0B0RNg9f7VJiEaXlhQXZfUW9DVkE)
