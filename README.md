@@ -4,6 +4,7 @@ This database, written for SQLite with a Python interface, was designed and buil
 
 ### To run:
 `sh init_db.sh` to create the database and populate the information, then
+
 `python hospitalDatabaseUI.py` to start the user interface
 
 ### Entity-Relation Diagram
